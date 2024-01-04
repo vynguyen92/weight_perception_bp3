@@ -26,3 +26,37 @@ df_merge <- merge_nhanes_dataset_together(list_dataset = list("self_reported_wei
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Population Statistics  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
+continuous_variables <- c("RIDAGEYR" 
+                           , "URXUCR"  
+                           , "BMXBMI"
+                           , "INDFMPIR"
+                           , "URXBP3")
+
+categorical_variables <- c("weight_perception"
+                           , "sunscreen_usage_cat")
+
+df_population_stats <- create_table_population_statistics(df_nhanes = df_merge
+                                                          , continuous_variables = continuous_variables
+                                                          , categorical_variables = categorical_variables)
+  
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Step-wise Regression Models  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+vector_regression_models <- c("log10(URXBP3) ~ race + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI"
+                              , "log10(URXBP3) ~ race + weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI"
+                              , "log10(URXBP3) ~ race_weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI"
+                              , "log10(URXBP3) ~ race_weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + sunscreen_usage_ordinal"
+                              , "log10(URXBP3) ~ race_weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + sunscreen_usage_ordinal + INDFMPIR")
+
+vector_covariates <- c("RIDAGEYR" 
+                       , "URXUCR"  
+                       , "BMXBMI"
+                       , "INDFMPIR"
+                       , "URXBP3"
+                       , "weight_perception"
+                       , "sunscreen_usage_ordinal")
+
+df_regression_stats <- run_regression_models(df_nhanes = df_merge
+                                             , covariates = vector_covariates
+                                             , regression_formulas = vector_regression_models)
