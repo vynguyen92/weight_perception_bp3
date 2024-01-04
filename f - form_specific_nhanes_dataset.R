@@ -12,14 +12,14 @@ form_specific_nhanes_dataset <- function(pattern)
     append(.
            , pattern) %>%
     sort(.)
-  # print(vector_file_names)
+  print(vector_file_names)
   
   list_datasets <- lapply(vector_file_names
                           , nhanes)
-  
+
   df_nhanes_specific <- reduce(list_datasets
                                , full_join
                                , by = NULL)
-  
+
   return(df_nhanes_specific)
 }  
