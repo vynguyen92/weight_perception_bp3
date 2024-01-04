@@ -43,6 +43,13 @@ merge_nhanes_dataset_together <- function(list_dataset
                        , "DED031"
                        , "SEQN") 
               , by = "SEQN") %>%
+    full_join(.
+              , list_dataset[["weights"]] %>%
+                select("SEQN"
+                       , "WT_URXBP3"
+                       , "WTINT2YR"
+                       , "WTMEC2YR")
+              , by = "SEQN") %>%
     mutate(skin_tone_cat = case_when(DED031 == 1 ~ "severe sunburn with blisters"
                                      , DED031 == 2 ~ "severe sunburn for a few days with peeling"
                                      , DED031 == 3 ~ "mildly burned with some tanning"
@@ -75,11 +82,18 @@ merge_nhanes_dataset_together <- function(list_dataset
     mutate(weight_perception = weight_perception %>%
              factor(.) %>%
              relevel(.
-                     , ref = "_about the right weight")) %>%
+                     , ref = "_about the right weight")) 
+  
+  
+  df_merged <- df_merged%>%
+    full_join(.
+              , df_merged %>%
+                mutate(race = "All NHANES Women")
+              , by = NULL) %>%
     mutate(race_weight_perception = paste("_"
                                           , race
                                           , weight_perception
-                                          , sep = ""))
+                                          , sep = "")) 
   
   print(dim(df_merged))
   print(colnames(df_merged))
