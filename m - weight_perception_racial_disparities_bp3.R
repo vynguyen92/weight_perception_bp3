@@ -49,14 +49,17 @@ vector_regression_models <- c("log10(URXBP3) ~ race + RIDAGEYR + SDDSRVYR + URXU
                               , "log10(URXBP3) ~ race_weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + sunscreen_usage_ordinal"
                               , "log10(URXBP3) ~ race_weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + sunscreen_usage_ordinal + INDFMPIR")
 
-vector_covariates <- c("RIDAGEYR" 
+vector_covariates <- c("race"
+                       , "RIDAGEYR" 
                        , "URXUCR"  
                        , "BMXBMI"
                        , "INDFMPIR"
-                       , "URXBP3"
+                       , "SDDSRVYR"
                        , "weight_perception"
+                       , "race_weight_perception"
                        , "sunscreen_usage_ordinal")
 
 df_regression_stats <- run_regression_models(df_nhanes = df_merge
                                              , covariates = vector_covariates
+                                             , chemical = chemical_biomarker
                                              , regression_formulas = vector_regression_models)
