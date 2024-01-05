@@ -29,7 +29,9 @@ merge_nhanes_dataset_together <- function(list_dataset
                        , RIDRETH3
                        , RIDAGEYR
                        , INDFMPIR
-                       , SDDSRVYR)
+                       , SDDSRVYR
+                       , SDMVPSU
+                       , SDMVSTRA)
               , by = "SEQN") %>%
     full_join(.
               , list_dataset[["response"]] %>%
