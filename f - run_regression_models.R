@@ -267,7 +267,10 @@ run_regression_models <- function(df_nhanes
                              , df_glance
                              , by = c("regression_formula"
                                       , "account_sampling_design"
-                                      , "type_sample_size"))
+                                      , "type_sample_size")) %>%
+    mutate(covariates = gsub("log10\\(URXBP3\\) \\~ race_weight_perception \\+ |log10\\(URXBP3\\) \\~ race (\\+ |\\+ weight_perception \\+ )"
+                             , ""
+                             , regression_formula))
   View(df_regression)
 
   return(df_regression)
