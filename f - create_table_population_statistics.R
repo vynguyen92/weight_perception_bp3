@@ -4,6 +4,7 @@ create_table_population_statistics <- function(df_nhanes
 {
   # install.packages("gtsummary")
   library(gtsummary)
+  library(gt)
   
   df_nhanes <- df_nhanes %>%
     select(race
@@ -28,7 +29,13 @@ create_table_population_statistics <- function(df_nhanes
                                     , weight_perception)) %>%
     mutate(sunscreen_usage_cat = gsub("_"
                                     , ""
-                                    , sunscreen_usage_cat)) %>%
+                                    , sunscreen_usage_cat) %>%
+             factor(.
+                    , levels = c("always"
+                                 , "most of the time"
+                                 , "sometimes"
+                                 , "rarely"
+                                 , "never"))) %>%
     tbl_summary(by = race
                 , label = list(RIDAGEYR ~ "Age (years)"
                                , URXUCR ~ "Urinary creatinine (mg/dL)"
@@ -46,6 +53,9 @@ create_table_population_statistics <- function(df_nhanes
                 )
   print(df_stats)
   
+  gtsave(as_gt( df_stats)
+         , "table_1.png"
+         , expand = 10)
   # continuous_summary <- df_nhanes %>%
   #   group_by(race) %>%
   #   select(all_of(continuous_variables)) %>%

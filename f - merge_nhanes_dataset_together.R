@@ -62,7 +62,13 @@ merge_nhanes_dataset_together <- function(list_dataset
                                            , DEQ034D == 2 ~ "_most of the time"
                                            , DEQ034D == 3 ~ "_sometimes"
                                            , DEQ034D == 4 ~ "_rarely"
-                                           , DEQ034D == 5 ~ "_never")) %>%
+                                           , DEQ034D == 5 ~ "_never") %>%
+             factor(.
+                    , levels = c("_always"
+                                 , "_most of the time"
+                                 , "_sometimes"
+                                 , "_rarely"
+                                 , "_never"))) %>%
     mutate(sunscreen_usage_ordinal = case_when(sunscreen_usage_cat == "_always" ~ 5
                                                , sunscreen_usage_cat == "_most of the time" ~ 4
                                                , sunscreen_usage_cat == "_sometimes" ~ 3
