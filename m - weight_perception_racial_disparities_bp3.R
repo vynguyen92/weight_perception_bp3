@@ -75,6 +75,13 @@ df_regression_stats <- run_regression_models(df_nhanes = df_merge
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
+boxplot_chemical_race_weight_perception(df_nhanes = df_merge
+                                        , covariates = vector_covariates
+                                        , chemical = chemical_biomarker
+                                        , name_of_folder = "Box Plot - BP3 by race and weight perception"
+                                        , current_directory = working_directory)
+
+setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
 forest_plot_gap_widening(df_regression = df_regression_stats
                          , name_of_folder = "Forest Plot - Differences by race and weight perception"
                          , current_directory = working_directory)
