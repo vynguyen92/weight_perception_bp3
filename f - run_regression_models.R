@@ -114,7 +114,15 @@ run_regression_models <- function(df_nhanes
       glance(.) %>%
       mutate(regression_formula = regression_model_i)  %>%
       mutate(account_sampling_design = "weighted") %>%
-      mutate(type_sample_size = "same across models")
+      mutate(type_sample_size = "same across models") %>%
+      mutate(r.squared = calculate_rsq_svy(model_object = svy_model_same_sample_size
+                                           , df_nhanes = df_nhanes_same_size_svy
+                                           , svy_design = nhanes_design_same_size
+                                           , stats = "rsq")
+             , adj.r.squared = calculate_rsq_svy(model_object = svy_model_same_sample_size
+                                                 , df_nhanes = df_nhanes_same_size_svy
+                                                 , svy_design = nhanes_design_same_size
+                                                 , stats = "adjusted_rsq"))
     # print(df_glance_svy_same_sample_size_i)
 
     pattern_svy_same_sample_size_i <- paste("weighted_same_sample_size"
@@ -235,7 +243,15 @@ run_regression_models <- function(df_nhanes
       glance(.) %>%
       mutate(regression_formula = regression_model_i) %>%
       mutate(account_sampling_design = "weighted") %>%
-      mutate(type_sample_size = "max sample size")
+      mutate(type_sample_size = "max sample size") %>%
+      mutate(r.squared = calculate_rsq_svy(model_object = svy_model_dif_sample_size
+                                           , df_nhanes = df_svy_nhanes_dif_size
+                                           , svy_design = nhanes_design_dif_size
+                                           , stats = "rsq")
+             , adj.r.squared = calculate_rsq_svy(model_object = svy_model_dif_sample_size
+                                                 , df_nhanes = df_svy_nhanes_dif_size
+                                                 , svy_design = nhanes_design_dif_size
+                                                 , stats = "adjusted_rsq"))
     # print(df_glance_svy_same_sample_size_i)
 
     pattern_svy_dif_sample_size_i <- paste("weighted_dif_sample_size"
