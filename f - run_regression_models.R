@@ -289,5 +289,17 @@ run_regression_models <- function(df_nhanes
                              , regression_formula))
   View(df_regression)
 
-  return(df_regression)
+  list_regression <- list()
+  
+  list_regression[["tidy"]] <- df_tidy %>%
+    mutate(covariates = gsub("log10\\(URXBP3\\) \\~ race_weight_perception \\+ |log10\\(URXBP3\\) \\~ race (\\+ |\\+ weight_perception \\+ )"
+                             , ""
+                             , regression_formula))
+  
+  list_regression[["glance"]] <- df_glance %>%
+    mutate(covariates = gsub("log10\\(URXBP3\\) \\~ race_weight_perception \\+ |log10\\(URXBP3\\) \\~ race (\\+ |\\+ weight_perception \\+ )"
+                             , ""
+                             , regression_formula))
+  
+  return(list_regression)
 }
