@@ -9,8 +9,11 @@ create_table_population_statistics <- function(df_nhanes
   df_nhanes <- df_nhanes %>%
     select(race
            , continuous_variables
+           , "SDDSRVYR"
            , categorical_variables) %>%
     na.omit(.)
+  
+  print(df_nhanes$SDDSRVYR %>% unique(.))
   
   df_stats <- df_nhanes %>%
     select(race
