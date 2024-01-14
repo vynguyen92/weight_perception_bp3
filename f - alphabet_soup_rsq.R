@@ -70,11 +70,11 @@ alphabet_soup_rsq <- function(regression_stratified
                                , type_sample_size
                                , rsq_type
                                , sep = " - "))
-  print(df_combination)
+  # print(df_combination)
   
   num_combinations <- nrow(df_combination)
   
-  for(i in seq(num_combinations)[1])
+  for(i in seq(num_combinations))
   {
     subset_combination <- df_combination[i,]
     # print(subset_combination)
@@ -102,7 +102,7 @@ alphabet_soup_rsq <- function(regression_stratified
     subset_stats_rsq <- df_rsq %>%
       filter(account_sampling_design == type_sampling_design_i) %>%
       filter(type_sample_size == type_sample_size_i)
-    print(subset_stats_rsq)
+    # print(subset_stats_rsq)
     # print(colnames(subset_stats_rsq))
     
     rsq_pattern <- ifelse(type_rsq_i == "rsq"
@@ -130,7 +130,7 @@ alphabet_soup_rsq <- function(regression_stratified
                      , sep = "")) %>%
       mutate(mean_rsq = (without_sunscreen_usage + with_sunscreen_usage)/2) %>%
       arrange(value)
-    print(subset_sunscreen_wide)
+    # print(subset_sunscreen_wide)
     
     ordered_race <- subset_sunscreen_wide %>%
       pull(race)
@@ -141,7 +141,10 @@ alphabet_soup_rsq <- function(regression_stratified
     
     subset_stats_rsq <- subset_stats_rsq %>%
       mutate(race = factor(race
-                           , levels = ordered_race))
+                           , levels = ordered_race)) %>%
+      mutate(covariates_included = ifelse(sunscreen_included == "without sunscreen usage"
+                                          , "adjusted for age, NHANES cycle, urinary creatinine, BMI, and PIR"
+                                          , "adjusted for age, NHANES cycle, urinary creatinine, BMI, PIR, and sunscreen usage"))
     
     alphabet_soup_plot <- ggplot() +
       geom_segment(data = subset_sunscreen_wide
@@ -152,20 +155,59 @@ alphabet_soup_rsq <- function(regression_stratified
       geom_point(data = subset_stats_rsq
                  , mapping = aes(x = !!sym(rsq_pattern) 
                                  , y =  race
-                                 , shape = sunscreen_included
-                                 , color = sunscreen_included)
-                 , size = 3) +
+                                 , shape = covariates_included
+                                 , color = covariates_included)
+                 , size = 5) +
       geom_text(data = subset_sunscreen_wide
                 , mapping = aes(y = race 
                                 , x = mean_rsq
                                 , label = label)
+                , size = 5
                 , nudge_y = 0.2) +
+      scale_shape_manual(values = c(49, 50)) +
+      xlab("Coefficient of Determination, R2") +
       xlim(0,0.5) +
-      theme(legend.position = "top")
+      guides(shape = guide_legend(title = "Confounders")
+             , color = guide_legend(title = "Confounders")) +
+      theme(legend.position = "top"
+            , legend.direction = "vertical"
+            , axis.title.y = element_blank()
+            , axis.text = element_text(size = 12)
+            , axis.title.x = element_text(size = 12)
+            , legend.text = element_text(size = 12)
+            , legend.title = element_text(size = 12))
+    
+    plot_name.png <- paste("alphabet_soup_plot_"
+                           , combination_i %>%
+                             gsub(" - | "
+                                  , "_"
+                                  , .)
+                           , ".png"
+                           , sep = "")
+    
+    plot_name.pdf <- paste("alphabet_soup_plot_"
+                           , combination_i %>%
+                             gsub(" - | "
+                                  , "_"
+                                  , .)
+                           , ".pdf"
+                           , sep = "")
+    
+    # Save the panel of stairway plots as a png and pdf
+    print(plot_name.png)
+    ggsave(filename = plot_name.png
+           , plot = alphabet_soup_plot
+           , width = 14
+           , height = 9
+           , units = "in")
+    print(plot_name.pdf)
+    ggsave(filename = plot_name.pdf
+           , plot = alphabet_soup_plot
+           , width = 14
+           , height = 9
+           , units = "in")
     
   }
-  
-
   
   # Set the directory to the folder containing the function and main scripts
   setwd(current_directory)
