@@ -115,18 +115,24 @@ run_stratified_regression_models <- function(df_nhanes
     mutate(asterisks = case_when(p.value > 0.05 ~ ""
                                  , p.value > 0.01 & p.value <= 0.05 ~ "*"
                                  , p.value > 0.001 & p.value <= 0.01 ~ "**"
-                                 , p.value <= 0.001 ~ "***")) 
+                                 , p.value <= 0.001 ~ "***")) %>%
+    mutate(covariates = gsub("log10\\(URXBP3\\) \\~ weight_perception \\+ |log10\\(URXBP3\\) \\~ race (\\+ |\\+ weight_perception \\+ )"
+                             , ""
+                             , regression_formula))
   # View(df_tidy)
 
   df_glance <- reduce(list_glance
                       , full_join
-                      , by = NULL)
+                      , by = NULL) %>%
+    mutate(covariates = gsub("log10\\(URXBP3\\) \\~ weight_perception \\+ |log10\\(URXBP3\\) \\~ race (\\+ |\\+ weight_perception \\+ )"
+                             , ""
+                             , regression_formula))
   # View(df_glance)
 
 
   list_regression <- list()
 
-  list_regression[["tidy"]] <- df_tidy
+  list_regression[["tidy"]] <- df_tidy 
 
   list_regression[["glance"]] <- df_glance
 
