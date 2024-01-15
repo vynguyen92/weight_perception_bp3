@@ -8,7 +8,7 @@ svyglm_stratified_model <- function(x
   race_i <- df_race_i$race %>% 
     unique(.)
   
-  print(race_i)
+  # print(race_i)
   
   num_cycles <- df_race_i$SDDSRVYR %>%
     unique(.) %>%
