@@ -33,16 +33,19 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
            , "SDMVSTRA"
            , covariates) %>%
     na.omit(.) %>%
-    filter(race != "All NHANES Women") %>%
-    mutate(race = factor(race) %>%
-             relevel(.
-                     , ref = "Non-Hispanic Black")) %>%
+    # filter(race != "All NHANES Women") %>%
+    mutate(race = factor(race
+                         , levels = c("All NHANES Women"
+                                      , "Non-Hispanic White"
+                                      , "Non-Hispanic Black"
+                                      , "Mexican American"                   
+                                      , "Other Hispanic"
+                                      , "Non-Hispanic Asian"
+                                      , "Other Race - Including Multi-Racial"))) %>%
     mutate(race_weight_perception = ifelse(race == "Non-Hispanic Black"
                                            , "Non-Hispanic Black"
                                            , race_weight_perception)) %>%
-    mutate(race_weight_perception = factor(race_weight_perception) %>%
-             relevel(.
-                     , ref = "Non-Hispanic Black")) %>%
+    mutate(race_weight_perception = factor(race_weight_perception)) %>%
     mutate(weight_perception = factor(weight_perception
                                       , levels = c("_overweight"
                                                    , "_about the right weight")))
@@ -87,7 +90,7 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
                 , values_from = "n") %>%
     mutate(label = paste(overweight
                          , about_the_right_weight
-                         , sep = "    "))
+                         , sep = "       "))
   # print(df_sample_size_label)
   
   df_nhanes_same_size <- full_join(df_nhanes_same_size
@@ -100,21 +103,28 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
                                                      , mapping = aes(x = weight_perception
                                                                      , y = df_nhanes_same_size[,chemical]
                                                                      , fill = weight_perception)) +
-    geom_boxplot() +
-    facet_grid(cols = vars(race)) +
+    geom_violin() +
+    geom_boxplot(data = df_nhanes_same_size
+                 , mapping = aes(x = weight_perception
+                                 , y = df_nhanes_same_size[,chemical]
+                                 )
+                 , inherit.aes = FALSE
+                 , width = 0.3) +
     stat_summary(fun.y = mean
                  , geom = "point"
                  , shape = 24
                  , size = 4
                  , fill = "gray"
-                 ) +
+    ) +
+    facet_grid(cols = vars(race)) +
     geom_text(data = df_nhanes_same_size
               , mapping = aes(x = 1.5
                               , y = max(df_nhanes_same_size[,chemical]) + 10000
                               , label = label)) +
     geom_signif(comparisons = list(c("_overweight"
-                                     , "_about the right weight")), 
-                map_signif_level = TRUE) +
+                                     , "_about the right weight"))
+               , map_signif_level = TRUE
+               , textsize = 5) +
     scale_y_log10() +
     scale_fill_manual(values = c(#"black"
                                    "red"
@@ -124,9 +134,14 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
                                     , "Perceived at the right weight"
                        )) +
     labs(y = chemical_name) +
+    guides(fill = guide_legend(title = "Weight Perception")) +
     theme(legend.position = "top"
           , axis.text.x = element_blank()
-          , axis.title.x = element_blank())
+          , axis.title.x = element_blank()
+          , axis.text.y = element_text(size = 12)
+          , axis.title.y = element_text(size = 12)
+          , legend.title = element_text(size = 12)
+          , legend.text = element_text(size = 12))
   
   plot_name.png <- paste("box_plot_"
                          , "same_sample_size"
@@ -142,13 +157,13 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
   print(plot_name.png)
   ggsave(filename = plot_name.png
          , plot = boxplot_race_weight_perception_same_size
-         , width = 14
+         , width = 15
          , height = 9
          , units = "in")
   print(plot_name.pdf)
   ggsave(filename = plot_name.pdf
          , plot = boxplot_race_weight_perception_same_size
-         , width = 14
+         , width = 15
          , height = 9
          , units = "in")
   
@@ -161,6 +176,7 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
                                                                                , y = df_nhanes_ref_black[,chemical]
                                                                                , fill = weight_perception)) +
     geom_boxplot() +
+    geom_jitter() +
     facet_grid(cols = vars(race)) +
     stat_summary(fun.y = mean
                  , geom = "point"
@@ -224,6 +240,7 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
                                              , y = df_nhanes_max_size[,chemical]
                                              , fill = weight_perception)) +
     geom_boxplot() +
+    geom_jitter() +
     facet_grid(cols = vars(race)) +
     geom_signif(comparisons = list(c("_overweight"
                                      , "_about the right weight")),
