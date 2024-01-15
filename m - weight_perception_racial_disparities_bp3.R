@@ -74,7 +74,8 @@ list_regression_stats <- run_regression_models(df_nhanes = df_merge
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Stratified Regression Models  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-vector_stratified_models <- c("log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR"
+vector_stratified_models <- c("log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI"
+                              , "log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR"
                               , "log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + sunscreen_usage_ordinal")
 
 vector_covariates_stratified <- c("race"
@@ -95,14 +96,14 @@ list_regression_stats_stratified <- run_stratified_regression_models(df_nhanes =
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Visualization  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-
+setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
 boxplot_chemical_race_weight_perception(df_nhanes = df_merge
                                         , covariates = vector_covariates
                                         , chemical = chemical_biomarker
                                         , name_of_folder = "Box Plot - BP3 by race and weight perception"
                                         , current_directory = working_directory)
 
-
+setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
 forest_plot_gap_widening(df_regression = df_regression_stats
                          , name_of_folder = "Forest Plot - Differences by race and weight perception"
                          , current_directory = working_directory)
