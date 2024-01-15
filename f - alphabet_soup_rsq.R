@@ -42,7 +42,7 @@ alphabet_soup_rsq <- function(regression_stratified
                                        , "with sunscreen usage"
                                        , "without sunscreen usage"))
            
-  # View(df_rsq)
+  View(df_rsq)
   
   print(colnames(df_rsq))
   
@@ -59,7 +59,7 @@ alphabet_soup_rsq <- function(regression_stratified
     mutate(rsq_type = gsub("_sunscreen_contribution"
                            , ""
                            , rsq_type))
-  # View(df_stats)
+  View(df_stats)
   
   df_combination <- df_stats  %>%
     select(account_sampling_design
@@ -177,35 +177,35 @@ alphabet_soup_rsq <- function(regression_stratified
             , legend.text = element_text(size = 12)
             , legend.title = element_text(size = 12))
     
-    plot_name.png <- paste("alphabet_soup_plot_"
-                           , combination_i %>%
-                             gsub(" - | "
-                                  , "_"
-                                  , .)
-                           , ".png"
-                           , sep = "")
-    
-    plot_name.pdf <- paste("alphabet_soup_plot_"
-                           , combination_i %>%
-                             gsub(" - | "
-                                  , "_"
-                                  , .)
-                           , ".pdf"
-                           , sep = "")
-    
-    # Save the panel of stairway plots as a png and pdf
-    print(plot_name.png)
-    ggsave(filename = plot_name.png
-           , plot = alphabet_soup_plot
-           , width = 14
-           , height = 9
-           , units = "in")
-    print(plot_name.pdf)
-    ggsave(filename = plot_name.pdf
-           , plot = alphabet_soup_plot
-           , width = 14
-           , height = 9
-           , units = "in")
+    # plot_name.png <- paste("alphabet_soup_plot_"
+    #                        , combination_i %>%
+    #                          gsub(" - | "
+    #                               , "_"
+    #                               , .)
+    #                        , ".png"
+    #                        , sep = "")
+    # 
+    # plot_name.pdf <- paste("alphabet_soup_plot_"
+    #                        , combination_i %>%
+    #                          gsub(" - | "
+    #                               , "_"
+    #                               , .)
+    #                        , ".pdf"
+    #                        , sep = "")
+    # 
+    # # Save the panel of stairway plots as a png and pdf
+    # print(plot_name.png)
+    # ggsave(filename = plot_name.png
+    #        , plot = alphabet_soup_plot
+    #        , width = 14
+    #        , height = 9
+    #        , units = "in")
+    # print(plot_name.pdf)
+    # ggsave(filename = plot_name.pdf
+    #        , plot = alphabet_soup_plot
+    #        , width = 14
+    #        , height = 9
+    #        , units = "in")
     
   }
   

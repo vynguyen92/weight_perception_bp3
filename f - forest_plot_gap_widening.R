@@ -1,4 +1,5 @@
-forest_plot_gap_widening <- function(df_regression
+forest_plot_gap_widening <- function(list_all
+                                     , list_stratified
                                      , name_of_folder 
                                      , current_directory)
 {
@@ -34,7 +35,7 @@ forest_plot_gap_widening <- function(df_regression
   # Set the working directory to this new folder
   setwd(new_working_directory)
   
-  df_regression <- df_regression %>%
+  df_regression <- list_all[["tidy"]] %>%
     filter(regression_formula != "log10(URXBP3) ~ race + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI")
   
   df_combination <- df_regression %>%
@@ -73,7 +74,7 @@ forest_plot_gap_widening <- function(df_regression
       filter(type_sample_size == type_sample_size_i) %>%
       filter(grepl("race", term) == TRUE) %>%
       filter(covariates == covariates_i) %>%
-      mutate(adj_pvalues = p.adjust(p.value.x, method = "BH")) %>%
+      mutate(adj_pvalues = p.adjust(p.value, method = "BH")) %>%
       mutate(asterisk_adj = case_when(adj_pvalues > 0.05 ~ ""
                                       , adj_pvalues > 0.01 & adj_pvalues <= 0.05 ~ "*"
                                       , adj_pvalues > 0.001 & adj_pvalues <= 0.01 ~ "**"
@@ -102,8 +103,16 @@ forest_plot_gap_widening <- function(df_regression
                               , "%]"
                               , sep = ""))
     # View(subset_regression)
+    regression_model_i <- subset_regression %>%
+      pull(regression_formula) %>%
+      unique(.)
+    # print(regression_model_i)
     
-    num_observations <- subset_regression %>%
+    # View(list_all[["glance"]])
+    num_observations <- list_all[["glance"]] %>%
+      filter(account_sampling_design == type_sampling_design_i) %>%
+      filter(type_sample_size == type_sample_size_i) %>%
+      filter(covariates == covariates_i) %>%
       pull(nobs) %>%
       unique(.)
     # print(num_observations)
@@ -138,6 +147,10 @@ forest_plot_gap_widening <- function(df_regression
     
     # print(colnames(subset_regression))
     
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Extract Legend from Dummy Plot  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+    
     dummy_plot <- ggplot(data = subset_regression %>%
                            mutate(weight_perception = factor(weight_perception
                                                              , levels = c("all"
@@ -162,6 +175,71 @@ forest_plot_gap_widening <- function(df_regression
     
     legend_colors <- get_legend(dummy_plot)
     
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+    #~~~~~~~~~~~~~~~~~~~~~~~  Create Forest Plot for non-Hispanic Black Women  ~~~~~~~~~~~~~~~~~~~~~~~#
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+    
+    df_tidy_regression_black <- list_stratified[["tidy"]] %>%
+      filter(race == "Non-Hispanic Black") %>%
+      filter(account_sampling_design == type_sampling_design_i) %>%
+      # filter(type_sample_size == type_sample_size_i) %>%
+      filter(covariates == covariates_i) %>%
+      filter(grepl("weight_perception", term) == TRUE) %>%
+      mutate(term = "Perceived overweight") %>%
+      mutate(label_ci = paste(percent_diff %>%
+                             round(.)
+                           , "% ["
+                           , perc_diff_ci_low %>%
+                             round(.)
+                           , "%,"
+                           , perc_diff_ci_high %>%
+                             round(.)
+                           , "%]"
+                           , sep = ""))
+    # print(df_tidy_regression_black)
+    # print(colnames(df_tidy_regression_black))
+    
+    forest_plot_black <- ggplot(data = df_tidy_regression_black
+                                , mapping = aes(x = term
+                                                , y = percent_diff)
+                                ) +
+      geom_point(color = "red"
+                 , size = 3.5) +
+      geom_errorbar(mapping = aes(ymin = perc_diff_ci_low
+                                  , ymax = perc_diff_ci_high)
+                    , width = 0.2
+                    , linewidth = 1.5
+                    , color = "red") +
+      facet_wrap(~race) +
+      ylim(ifelse(min_perc_diff < 0
+                  , min_perc_diff
+                  , 0)
+           , max_perc_diff) +
+      geom_text(mapping = aes(x = term
+                              , y = percent_diff
+                              , label = asterisks)
+                , size = 5
+                , nudge_x = 0.15
+                , nudge_y = -0.35) +
+      geom_text_repel(mapping = aes(x = term
+                                      , y = percent_diff
+                                      , label = label_ci)
+                      , size = 3
+                      , nudge_x = -0.3
+                      , segment.color = 'transparent'
+                      ) +
+      labs(#y = "Percent Difference of BP3" #relative to women who perceived at the right weight"
+           tag = "B") +
+      theme(axis.text.x = element_text(size = 12)
+            , axis.text.y = element_text(size = 14)
+            , axis.title.x = element_blank()
+            , axis.title.y = element_blank()
+            , strip.text = element_text(size = 15))
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Create Arrow Forest Plots  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+    
     subset_regression_all <- subset_regression %>%
       filter(weight_perception == "all") 
     # View(subset_regression_all)
@@ -172,23 +250,28 @@ forest_plot_gap_widening <- function(df_regression
     subset_regression_overweight <- subset_regression %>%
       filter(weight_perception == "overweight")
     
-    forest_plot <- ggplot() +
+    subset_regression_all <- subset_regression_all %>%
+      mutate(group = "All NHANES Women")
+    
+    forest_plot <- ggplot(subset_regression_all) +
       geom_segment(data = subset_regression_right_weight
                    , mapping = aes(x = race
                                    , xend = race
                                    , y = subset_regression_all$percent_diff
-                                   , yend = subset_regression_right_weight$percent_diff)
+                                   , yend = percent_diff)
                    , arrow = arrow(length = unit(0.2, "inches"))
                    , size = 2
-                   , color = "blue") +
+                   , color = "blue"
+                   , inherit.aes = FALSE) +
       geom_segment(data = subset_regression_overweight
                    , mapping = aes(x = race
                                    , xend = race
                                    , y = subset_regression_all$percent_diff
-                                   , yend = subset_regression_overweight$percent_diff)
+                                   , yend = percent_diff)
                    , arrow = arrow(length = unit(0.2, "inches"))
                    , size = 2
-                   , color = "red") +
+                   , color = "red"
+                   , inherit.aes = FALSE) +
       geom_point(data = subset_regression_all
                  , mapping = aes(x = race
                                  , y = percent_diff)
@@ -199,7 +282,8 @@ forest_plot_gap_widening <- function(df_regression
                                 , label = asterisks)
                 , size = 5
                 , nudge_x = 0.15
-                , nudge_y = -0.35) +
+                , nudge_y = -0.35
+                , inherit.aes = FALSE) +
       geom_text_repel(data = subset_regression
                 , mapping = aes(x = race
                                 , y = percent_diff
@@ -207,25 +291,33 @@ forest_plot_gap_widening <- function(df_regression
                 , size = 3
                 , nudge_x = -0.3
                 , segment.color = 'transparent'
-                ) +
+                , inherit.aes = FALSE) +
+      facet_wrap(~group) +
       ylim(ifelse(min_perc_diff < 0
                   , min_perc_diff
                   , 0)
            , max_perc_diff) +
-      ggtitle(label = paste(combination_i
-                            , " - (N = "
-                            , num_observations
-                            , ")"
-                            , sep = "")) +
-      labs(y = "Percent Difference of BP3 relative to Non-Hispanic Black Women") +
+      # ggtitle(label = paste(combination_i
+      #                       , " - (N = "
+      #                       , num_observations
+      #                       , ")"
+      #                       , sep = "")) +
+      labs(y = "Percent Difference of BP3" #relative to Non-Hispanic Black Women"
+           , tag = "A") +
       theme(axis.title.x = element_blank()
             , plot.title = element_text(size = 14)
-            , axis.text = element_text(size = 14)
+            , axis.text = element_text(size = 12)
             , axis.title.y = element_text(size = 14)
-            )
+            , strip.text = element_text(size = 15))
+    
+    final_plot <- ggarrange(forest_plot
+                            , forest_plot_black
+                            , ncol = 2
+                            , nrow = 1
+                            , widths = c(8,2))
     
     final_plot <- ggarrange(legend_colors
-                            , forest_plot
+                            , final_plot
                             , ncol = 1
                             , nrow = 2
                             , heights = c(0.8,10))
@@ -239,7 +331,7 @@ forest_plot_gap_widening <- function(df_regression
                            , "glm"
                            , ".png"
                            , sep = "")
-    
+
     plot_name.pdf <- paste("forest_plot_"
                            , combination_i %>%
                              gsub(" \\+ "
@@ -249,18 +341,18 @@ forest_plot_gap_widening <- function(df_regression
                            , "glm"
                            , ".pdf"
                            , sep = "")
-    
-    # Save the panel of stairway plots as a png and pdf
+
+    # Save the panel of plots as a png and pdf
     print(plot_name.png)
     ggsave(filename = plot_name.png
            , plot = final_plot
-           , width = 14
+           , width = 15
            , height = 9
            , units = "in")
     print(plot_name.pdf)
     ggsave(filename = plot_name.pdf
            , plot = final_plot
-           , width = 14
+           , width = 15
            , height = 9
            , units = "in")
     
@@ -270,4 +362,5 @@ forest_plot_gap_widening <- function(df_regression
   # Set the directory to the folder containing the function and main scripts
   setwd(current_directory)
   final_plot
+  # forest_plot_black
 }
