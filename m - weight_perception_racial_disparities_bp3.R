@@ -111,7 +111,7 @@ forest_plot_gap_widening(list_all = list_regression_stats
                          , current_directory = working_directory)
 
 setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
-alphabet_soup_rsq(regression_stratified = list_regression_stats_stratified[[]]
+alphabet_soup_rsq(regression_stratified = list_regression_stats_stratified
                   , regression_all = list_regression_stats
                   , name_of_folder = "Alphabet Soup Plot - Contribution of sunscreen for BP3"
                   , current_directory = working_directory)
