@@ -18,6 +18,7 @@ df_dermatology <- form_specific_nhanes_dataset(pattern = "DEQ")
 
 chemical_biomarker <- "URXBP3"
 
+
 df_merge_youth <- merge_nhanes_dataset_together(list_dataset = list("self_reported_weight" = df_self_reported_weight_youth
                                                                     , "chemicals" = chemicals_clean
                                                                     , "demographics" = demographics_clean
@@ -26,13 +27,14 @@ df_merge_youth <- merge_nhanes_dataset_together(list_dataset = list("self_report
                                                 , vector_chemical_codenames = chemical_biomarker
                                                 , boolean_adult = FALSE)
 
+# count the excluded participants and the reasons for exclusion
 participant_counts <- count_excluded_participants(list_dataset = list("self_reported_weight" = df_self_reported_weight
-                                                                      , "dermatology" = df_dermatology
-                                                                      , "chemicals" = chemicals_clean
-                                                                      , "demographics" = demographics_clean
-                                                                      , "response" = response_clean
-                                                                      , "weights" = weights_clean)
-                                                  , vector_chemical_codenames = chemical_biomarker)
+                                                              , "dermatology" = df_dermatology
+                                                              , "chemicals" = chemicals_clean
+                                                              , "demographics" = demographics_clean
+                                                              , "response" = response_clean
+                                                              , "weights" = weights_clean)
+                                          , vector_chemical_codenames = chemical_biomarker)
 
 df_merge <- merge_nhanes_dataset_together(list_dataset = list("self_reported_weight" = df_self_reported_weight
                                                               , "dermatology" = df_dermatology
