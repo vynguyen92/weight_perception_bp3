@@ -12,9 +12,19 @@ working_directory <- "/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_percep
 
 df_self_reported_weight <- form_specific_nhanes_dataset(pattern = "WHQ")
 
+df_self_reported_weight_youth <- form_specific_nhanes_dataset(pattern = "WHQMEC")
+
 df_dermatology <- form_specific_nhanes_dataset(pattern = "DEQ")
 
 chemical_biomarker <- "URXBP3"
+
+df_merge_youth <- merge_nhanes_dataset_together(list_dataset = list("self_reported_weight" = df_self_reported_weight_youth
+                                                                    , "chemicals" = chemicals_clean
+                                                                    , "demographics" = demographics_clean
+                                                                    , "response" = response_clean
+                                                                    , "weights" = weights_clean)
+                                                , vector_chemical_codenames = chemical_biomarker
+                                                , boolean_adult = FALSE)
 
 df_merge <- merge_nhanes_dataset_together(list_dataset = list("self_reported_weight" = df_self_reported_weight
                                                               , "dermatology" = df_dermatology
@@ -41,6 +51,11 @@ df_population_stats <- create_table_population_statistics(df_nhanes = df_merge
                                                           , continuous_variables = continuous_variables
                                                           , categorical_variables = categorical_variables)
   
+df_population_stats_youth <- create_table_population_statistics(df_nhanes = df_merge_youth
+                                                                , continuous_variables = continuous_variables
+                                                                , categorical_variables = "weight_perception"
+                                                                , boolean_adult = FALSE)
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Step-wise Regression Models  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

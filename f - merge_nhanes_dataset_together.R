@@ -1,19 +1,33 @@
 merge_nhanes_dataset_together <- function(list_dataset
-                                          , vector_chemical_codenames)
+                                          , vector_chemical_codenames
+                                          , boolean_adult = TRUE)
 {
   library(tidyverse)
   
   # print(names(list_dataset))
+  if(boolean_adult == TRUE)
+  {
+    df_self_reported_weight <- list_dataset[["self_reported_weight"]] %>%
+      select(SEQN
+             , WHD010
+             , WHD020
+             , WHQ030
+             , WHQ040) %>%  
+      filter(WHQ030 %in% seq(3)) %>%
+      mutate(weight_perception = case_when(WHQ030 == 1 ~ "_overweight"
+                                           , WHQ030 == 3 ~ "_about the right weight")) 
+  } else {
+    df_self_reported_weight <- list_dataset[["self_reported_weight"]] %>%
+      select(SEQN
+             , WHQ030M) %>%
+      filter(WHQ030M %in% seq(3)) %>%
+      mutate(weight_perception = case_when(WHQ030M == 1 ~ "_overweight"
+                                           , WHQ030M == 3 ~ "_about the right weight"))
+  }
   
-  df_merged <- list_dataset[["self_reported_weight"]] %>%
-    select(SEQN
-           , WHD010
-           , WHD020
-           , WHQ030
-           , WHQ040) %>%
-    mutate(weight_perception = case_when(WHQ030 == 1 ~ "_overweight"
-                                         , WHQ030 == 2 ~ "_underweight"
-                                         , WHQ030 == 3 ~ "_about the right weight") ) %>%
+  
+  
+  df_merged <- df_self_reported_weight %>%
     full_join(.
               , list_dataset[["chemicals"]] %>%
                 filter(SDDSRVYR != -1) %>%
@@ -39,13 +53,43 @@ merge_nhanes_dataset_together <- function(list_dataset
                 select(SEQN
                        , URXUCR
                        , BMXBMI)
-              , by = "SEQN") %>%
-    full_join(.
-              , list_dataset[["dermatology"]] %>%
-                select("DEQ034D"
-                       , "DED031"
-                       , "SEQN") 
-              , by = "SEQN") %>%
+              , by = "SEQN") 
+  
+  if("dermatology" %in% names(list_dataset))
+  {
+    df_merged <- df_merged %>%
+      full_join(.
+                , list_dataset[["dermatology"]] %>%
+                  select("DEQ034D"
+                         , "DED031"
+                         , "SEQN") 
+                , by = "SEQN") %>%
+      mutate(skin_tone_cat = case_when(DED031 == 1 ~ "severe sunburn with blisters"
+                                       , DED031 == 2 ~ "severe sunburn for a few days with peeling"
+                                       , DED031 == 3 ~ "mildly burned with some tanning"
+                                       , DED031 == 4 ~ "turned darker without a sunburn"
+                                       , DED031 == 5 ~ "nothing would happen in half an hour")) %>%
+      mutate(sunscreen_usage_cat = case_when(DEQ034D == 1 ~ "_always"
+                                             , DEQ034D == 2 ~ "_most of the time"
+                                             , DEQ034D == 3 ~ "_sometimes"
+                                             , DEQ034D == 4 ~ "_rarely"
+                                             , DEQ034D == 5 ~ "_never") %>%
+               factor(.
+                      , levels = c("_always"
+                                   , "_most of the time"
+                                   , "_sometimes"
+                                   , "_rarely"
+                                   , "_never"))) %>%
+      mutate(sunscreen_usage_ordinal = case_when(sunscreen_usage_cat == "_always" ~ 5
+                                                 , sunscreen_usage_cat == "_most of the time" ~ 4
+                                                 , sunscreen_usage_cat == "_sometimes" ~ 3
+                                                 , sunscreen_usage_cat == "_rarely" ~ 2
+                                                 , sunscreen_usage_cat == "_never" ~ 1))
+  } else {
+    df_merged <- df_merged
+  }
+  
+  df_merged <- df_merged %>%
     full_join(.
               , list_dataset[["weights"]] %>%
                 select("SEQN"
@@ -53,28 +97,6 @@ merge_nhanes_dataset_together <- function(list_dataset
                        , "WTINT2YR"
                        , "WTMEC2YR")
               , by = "SEQN") %>%
-    mutate(skin_tone_cat = case_when(DED031 == 1 ~ "severe sunburn with blisters"
-                                     , DED031 == 2 ~ "severe sunburn for a few days with peeling"
-                                     , DED031 == 3 ~ "mildly burned with some tanning"
-                                     , DED031 == 4 ~ "turned darker without a sunburn"
-                                     , DED031 == 5 ~ "nothing would happen in half an hour")) %>%
-    mutate(sunscreen_usage_cat = case_when(DEQ034D == 1 ~ "_always"
-                                           , DEQ034D == 2 ~ "_most of the time"
-                                           , DEQ034D == 3 ~ "_sometimes"
-                                           , DEQ034D == 4 ~ "_rarely"
-                                           , DEQ034D == 5 ~ "_never") %>%
-             factor(.
-                    , levels = c("_always"
-                                 , "_most of the time"
-                                 , "_sometimes"
-                                 , "_rarely"
-                                 , "_never"))) %>%
-    mutate(sunscreen_usage_ordinal = case_when(sunscreen_usage_cat == "_always" ~ 5
-                                               , sunscreen_usage_cat == "_most of the time" ~ 4
-                                               , sunscreen_usage_cat == "_sometimes" ~ 3
-                                               , sunscreen_usage_cat == "_rarely" ~ 2
-                                               , sunscreen_usage_cat == "_never" ~ 1)) %>%
-    filter(WHQ030 %in% seq(3)) %>%
     filter(RIAGENDR == 2) %>%
     mutate(race = case_when(RIDRETH1 == 1 ~ "Mexican American"
                             , RIDRETH1 == 2 ~ "Other Hispanic"

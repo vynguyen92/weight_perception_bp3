@@ -1,6 +1,7 @@
 create_table_population_statistics <- function(df_nhanes
                                                , continuous_variables 
-                                               , categorical_variables )
+                                               , categorical_variables 
+                                               , boolean_adult = TRUE)
 {
   # install.packages("gtsummary")
   library(gtsummary)
@@ -29,36 +30,64 @@ create_table_population_statistics <- function(df_nhanes
                                       , "Other Race - Including Multi-Racial"))) %>%
     mutate(weight_perception = gsub("_"
                                     , "perceived "
-                                    , weight_perception)) %>%
-    mutate(sunscreen_usage_cat = gsub("_"
-                                    , ""
-                                    , sunscreen_usage_cat) %>%
-             factor(.
-                    , levels = c("always"
-                                 , "most of the time"
-                                 , "sometimes"
-                                 , "rarely"
-                                 , "never"))) %>%
-    tbl_summary(by = race
-                , label = list(RIDAGEYR ~ "Age (years)"
-                               , URXUCR ~ "Urinary creatinine (mg/dL)"
-                               , BMXBMI ~ "Body Mass Index (kg/m**2)"
-                               , INDFMPIR ~ "Poverty income ratio (-)"
-                               , URXBP3 ~ "Urinary Benzophenone-3 (ng/mL)"
-                               , weight_perception ~ "Weight perception"
-                               , sunscreen_usage_cat ~ "Sunscreen usage")
-                , statistic = list(all_continuous() ~ "{mean} ({sd})")
-                , digits = list(RIDAGEYR ~ c(1, 1)
-                                , URXUCR ~ c(1, 1)
-                                , BMXBMI ~ c(1, 1)
-                                , INDFMPIR ~ c(2, 2)
-                                , URXBP3 ~ c(1, 1))
-                )
+                                    , weight_perception))
+  
+  if(boolean_adult == TRUE)
+  {
+    df_stats <- df_stats %>%
+      mutate(sunscreen_usage_cat = gsub("_"
+                                        , ""
+                                        , sunscreen_usage_cat) %>%
+               factor(.
+                      , levels = c("always"
+                                   , "most of the time"
+                                   , "sometimes"
+                                   , "rarely"
+                                   , "never"))) %>%
+      tbl_summary(by = race
+                  , label = list(RIDAGEYR ~ "Age (years)"
+                                 , URXUCR ~ "Urinary creatinine (mg/dL)"
+                                 , BMXBMI ~ "Body Mass Index (kg/m**2)"
+                                 , INDFMPIR ~ "Poverty income ratio (-)"
+                                 , URXBP3 ~ "Urinary Benzophenone-3 (ng/mL)"
+                                 , weight_perception ~ "Weight perception"
+                                 , sunscreen_usage_cat ~ "Sunscreen usage")
+                  , statistic = list(all_continuous() ~ "{mean} ({sd})")
+                  , digits = list(RIDAGEYR ~ c(1, 1)
+                                  , URXUCR ~ c(1, 1)
+                                  , BMXBMI ~ c(1, 1)
+                                  , INDFMPIR ~ c(2, 2)
+                                  , URXBP3 ~ c(1, 1)))
+    
+    name_table <- "table_1_adults.png"
+  } else {
+    df_stats <- df_stats  %>%
+      tbl_summary(by = race
+                  , label = list(RIDAGEYR ~ "Age (years)"
+                                 , URXUCR ~ "Urinary creatinine (mg/dL)"
+                                 , BMXBMI ~ "Body Mass Index (kg/m**2)"
+                                 , INDFMPIR ~ "Poverty income ratio (-)"
+                                 , URXBP3 ~ "Urinary Benzophenone-3 (ng/mL)"
+                                 , weight_perception ~ "Weight perception")
+                  , statistic = list(all_continuous() ~ "{mean} ({sd})")
+                  , type = list(c(RIDAGEYR) ~ "continuous")
+                  , digits = list(RIDAGEYR ~ c(1, 1)
+                                  , URXUCR ~ c(1, 1)
+                                  , BMXBMI ~ c(1, 1)
+                                  , INDFMPIR ~ c(2, 2)
+                                  , URXBP3 ~ c(1, 1))
+                  
+                  )
+    
+    name_table <- "table_1_youth.png"
+  }  
   print(df_stats)
   
-  gtsave(as_gt( df_stats)
-         , "table_1.png"
+  
+  gtsave(data = as_gt(df_stats)
+         , filename = name_table
          , expand = 10)
+  
   # continuous_summary <- df_nhanes %>%
   #   group_by(race) %>%
   #   select(all_of(continuous_variables)) %>%
