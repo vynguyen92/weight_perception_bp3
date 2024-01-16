@@ -2,7 +2,8 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
                                                     , covariates 
                                                     , chemical 
                                                     , name_of_folder
-                                                    , current_directory)
+                                                    , current_directory
+                                                    ,is_adult)
 {
   library(tidyverse)
   library(ggsignif)
@@ -143,16 +144,27 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
           , legend.title = element_text(size = 12)
           , legend.text = element_text(size = 12))
   
-  plot_name.png <- paste("box_plot_"
+  if(is_adult == TRUE) {
+    plot_name.png <- paste("box_plot_"
                          , "same_sample_size"
                          , ".png"
                          , sep = "")
   
-  plot_name.pdf <- paste("box_plot_"
+    plot_name.pdf <- paste("box_plot_"
                          , "same_sample_size"
                          , ".pdf"
                          , sep = "")
-  
+  } else {
+    plot_name.png <- paste("box_plot_youth_"
+                           , "same_sample_size"
+                           , ".png"
+                           , sep = "")
+    
+    plot_name.pdf <- paste("box_plot_youth_"
+                           , "same_sample_size"
+                           , ".pdf"
+                           , sep = "")
+  }
   # Save the panel of stairway plots as a png and pdf
   print(plot_name.png)
   ggsave(filename = plot_name.png
@@ -264,17 +276,28 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
           , axis.text.x = element_blank()
           , axis.title.x = element_blank())
   
-  
-  plot_name.png <- paste("box_plot_"
+  if(is_adult==TRUE) {
+    plot_name.png <- paste("box_plot_"
                          , "max_sample_size"
                          , ".png"
                          , sep = "")
   
-  plot_name.pdf <- paste("box_plot_"
+    plot_name.pdf <- paste("box_plot_"
                          , "max_sample_size"
                          , ".pdf"
                          , sep = "")
-  
+  } else {
+    plot_name.png <- paste("box_plot_youth_"
+                           , "max_sample_size"
+                           , ".png"
+                           , sep = "")
+    
+    plot_name.pdf <- paste("box_plot_youth_"
+                           , "max_sample_size"
+                           , ".pdf"
+                           , sep = "")
+    
+  }
   # Save the panel of stairway plots as a png and pdf
   print(plot_name.png)
   ggsave(filename = plot_name.png

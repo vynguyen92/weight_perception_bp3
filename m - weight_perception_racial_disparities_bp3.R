@@ -63,7 +63,7 @@ df_population_stats <- create_table_population_statistics(df_nhanes = df_merge
   
 df_population_stats_youth <- create_table_population_statistics(df_nhanes = df_merge_youth
                                                                 , continuous_variables = continuous_variables
-                                                                , categorical_variables = weight_perception)
+                                                                , categorical_variables = "weight_perception",boolean=FALSE)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Step-wise Regression Models  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -79,6 +79,12 @@ vector_regression_models <- c("log10(URXBP3) ~ race + RIDAGEYR + SDDSRVYR + URXU
                               , "log10(URXBP3) ~ race + weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + sunscreen_usage_ordinal"
                               , "log10(URXBP3) ~ race_weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + sunscreen_usage_ordinal")
 
+vector_regression_models_youth <- c("log10(URXBP3) ~ race + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI"
+                              , "log10(URXBP3) ~ race + weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI"
+                              , "log10(URXBP3) ~ race_weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI"
+                              , "log10(URXBP3) ~ race + weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR"
+                              , "log10(URXBP3) ~ race_weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR")
+
 vector_covariates <- c("race"
                        , "RIDAGEYR" 
                        , "URXUCR"  
@@ -89,10 +95,25 @@ vector_covariates <- c("race"
                        , "race_weight_perception"
                        , "sunscreen_usage_ordinal")
 
+vector_covariates_youth <- c("race"
+                       , "RIDAGEYR" 
+                       , "URXUCR"  
+                       , "BMXBMI"
+                       , "INDFMPIR"
+                       , "SDDSRVYR"
+                       , "weight_perception"
+                       , "race_weight_perception")
+
+
 list_regression_stats <- run_regression_models(df_nhanes = df_merge
                                              , covariates = vector_covariates
                                              , chemical = chemical_biomarker
                                              , regression_formulas = vector_regression_models)
+
+list_regression_stats_youth <- run_regression_models(df_nhanes = df_merge_youth
+                                               , covariates = vector_covariates_youth
+                                               , chemical = chemical_biomarker
+                                               , regression_formulas = vector_regression_models_youth)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Stratified Regression Models  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -103,6 +124,10 @@ vector_stratified_models <- c("log10(URXBP3) ~ weight_perception + RIDAGEYR + SD
                               , "log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + sunscreen_usage_ordinal"
                               , "log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + sunscreen_usage_ordinal")
 
+vector_stratified_models_youth <- c("log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI"
+                              , "log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR")
+
+
 vector_covariates_stratified <- c("race"
                                   , "RIDAGEYR" 
                                   , "URXUCR"  
@@ -112,10 +137,23 @@ vector_covariates_stratified <- c("race"
                                   , "weight_perception"
                                   , "sunscreen_usage_ordinal")
 
+vector_covariates_stratified_youth <- c("race"
+                                  , "RIDAGEYR" 
+                                  , "URXUCR"  
+                                  , "BMXBMI"
+                                  , "INDFMPIR"
+                                  , "SDDSRVYR"
+                                  , "weight_perception")
+
 list_regression_stats_stratified <- run_stratified_regression_models(df_nhanes = df_merge
                                                                      , covariates = vector_covariates_stratified
                                                                      , chemical = chemical_biomarker
                                                                      , regression_formulas = vector_stratified_models)
+
+list_regression_stats_stratified_youth <- run_stratified_regression_models(df_nhanes = df_merge_youth
+                                                                     , covariates = vector_covariates_stratified_youth
+                                                                     , chemical = chemical_biomarker
+                                                                     , regression_formulas = vector_stratified_models_youth)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Visualization  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -126,13 +164,29 @@ boxplot_chemical_race_weight_perception(df_nhanes = df_merge
                                         , covariates = vector_covariates
                                         , chemical = chemical_biomarker
                                         , name_of_folder = "Box Plot - BP3 by race and weight perception"
-                                        , current_directory = working_directory)
+                                        , current_directory = working_directory,
+                                        is_adult=TRUE)
+
+boxplot_chemical_race_weight_perception(df_nhanes = df_merge
+                                        , covariates = vector_covariates_youth
+                                        , chemical = chemical_biomarker
+                                        , name_of_folder = "Box Plot - BP3 by race and weight perception"
+                                        , current_directory = working_directory
+                                        ,is_adult=FALSE)
+
 
 setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
 forest_plot_gap_widening(list_all = list_regression_stats
                          , list_stratified = list_regression_stats_stratified
                          , name_of_folder = "Forest Plot - Differences by race and weight perception"
-                         , current_directory = working_directory)
+                         , current_directory = working_directory
+                         ,is_adult=TRUE)
+
+forest_plot_gap_widening(list_all = list_regression_stats_youth
+                         , list_stratified = list_regression_stats_stratified_youth
+                         , name_of_folder = "Forest Plot - Differences by race and weight perception"
+                         , current_directory = working_directory
+                         ,is_adult=FALSE)
 
 setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
 alphabet_soup_rsq(regression_stratified = list_regression_stats_stratified

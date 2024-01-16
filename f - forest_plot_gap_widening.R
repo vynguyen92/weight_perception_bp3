@@ -1,7 +1,8 @@
 forest_plot_gap_widening <- function(list_all
                                      , list_stratified
                                      , name_of_folder 
-                                     , current_directory)
+                                     , current_directory
+                                     ,is_adult=TRUE)
 {
   library(tidyverse)
   library(RColorBrewer)
