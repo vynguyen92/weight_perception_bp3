@@ -18,7 +18,6 @@ df_dermatology <- form_specific_nhanes_dataset(pattern = "DEQ")
 
 chemical_biomarker <- "URXBP3"
 
-
 df_merge_youth <- merge_nhanes_dataset_together(list_dataset = list("self_reported_weight" = df_self_reported_weight_youth
                                                                     , "chemicals" = chemicals_clean
                                                                     , "demographics" = demographics_clean
@@ -63,7 +62,8 @@ df_population_stats <- create_table_population_statistics(df_nhanes = df_merge
   
 df_population_stats_youth <- create_table_population_statistics(df_nhanes = df_merge_youth
                                                                 , continuous_variables = continuous_variables
-                                                                , categorical_variables = "weight_perception",boolean=FALSE)
+                                                                , categorical_variables = "weight_perception"
+                                                                , boolean = FALSE)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Step-wise Regression Models  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -80,10 +80,10 @@ vector_regression_models <- c("log10(URXBP3) ~ race + RIDAGEYR + SDDSRVYR + URXU
                               , "log10(URXBP3) ~ race_weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + sunscreen_usage_ordinal")
 
 vector_regression_models_youth <- c("log10(URXBP3) ~ race + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI"
-                              , "log10(URXBP3) ~ race + weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI"
-                              , "log10(URXBP3) ~ race_weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI"
-                              , "log10(URXBP3) ~ race + weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR"
-                              , "log10(URXBP3) ~ race_weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR")
+                                    , "log10(URXBP3) ~ race + weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI"
+                                    , "log10(URXBP3) ~ race_weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI"
+                                    , "log10(URXBP3) ~ race + weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR"
+                                    , "log10(URXBP3) ~ race_weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR")
 
 vector_covariates <- c("race"
                        , "RIDAGEYR" 
@@ -125,7 +125,7 @@ vector_stratified_models <- c("log10(URXBP3) ~ weight_perception + RIDAGEYR + SD
                               , "log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + sunscreen_usage_ordinal")
 
 vector_stratified_models_youth <- c("log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI"
-                              , "log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR")
+                                    , "log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR")
 
 
 vector_covariates_stratified <- c("race"
@@ -186,7 +186,7 @@ forest_plot_gap_widening(list_all = list_regression_stats_youth
                          , list_stratified = list_regression_stats_stratified_youth
                          , name_of_folder = "Forest Plot - Differences by race and weight perception"
                          , current_directory = working_directory
-                         ,is_adult=FALSE)
+                         ,is_adult = FALSE)
 
 setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
 alphabet_soup_rsq(regression_stratified = list_regression_stats_stratified
