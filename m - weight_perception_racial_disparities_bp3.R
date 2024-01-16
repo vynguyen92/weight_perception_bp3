@@ -180,13 +180,13 @@ forest_plot_gap_widening(list_all = list_regression_stats
                          , list_stratified = list_regression_stats_stratified
                          , name_of_folder = "Forest Plot - Differences by race and weight perception"
                          , current_directory = working_directory
-                         ,is_adult=TRUE)
+                         , is_adult = TRUE)
 
 forest_plot_gap_widening(list_all = list_regression_stats_youth
                          , list_stratified = list_regression_stats_stratified_youth
                          , name_of_folder = "Forest Plot - Differences by race and weight perception"
                          , current_directory = working_directory
-                         ,is_adult = FALSE)
+                         , is_adult = FALSE)
 
 setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
 alphabet_soup_rsq(regression_stratified = list_regression_stats_stratified
