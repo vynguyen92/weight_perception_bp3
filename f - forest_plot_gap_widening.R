@@ -322,8 +322,8 @@ forest_plot_gap_widening <- function(list_all
                             , ncol = 1
                             , nrow = 2
                             , heights = c(0.8,10))
-    
-    plot_name.png <- paste("forest_plot_"
+    if(is_adult == TRUE) {
+      plot_name.png <- paste("forest_plot_"
                            , combination_i %>%
                              gsub(" \\+ "
                                   , "_"
@@ -333,7 +333,7 @@ forest_plot_gap_widening <- function(list_all
                            , ".png"
                            , sep = "")
 
-    plot_name.pdf <- paste("forest_plot_"
+      plot_name.pdf <- paste("forest_plot_"
                            , combination_i %>%
                              gsub(" \\+ "
                                   , "_"
@@ -342,7 +342,28 @@ forest_plot_gap_widening <- function(list_all
                            , "glm"
                            , ".pdf"
                            , sep = "")
-
+    } else {
+      plot_name.png <- paste("forest_plot_youth_"
+                             , combination_i %>%
+                               gsub(" \\+ "
+                                    , "_"
+                                    , .)
+                             , "_"
+                             , "glm"
+                             , ".png"
+                             , sep = "")
+      
+      plot_name.pdf <- paste("forest_plot_youth_"
+                             , combination_i %>%
+                               gsub(" \\+ "
+                                    , "_"
+                                    , .)
+                             , "_"
+                             , "glm"
+                             , ".pdf"
+                             , sep = "")
+      
+    }
     # Save the panel of plots as a png and pdf
     print(plot_name.png)
     ggsave(filename = plot_name.png
