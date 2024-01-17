@@ -66,16 +66,32 @@ df_population_stats_youth <- create_table_population_statistics(df_nhanes = df_m
                                                                 , boolean = FALSE)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#~~~~~~~~~~~~~~~~~~~~~~~  Chi-Square Tests on Sunscreen Usage and Weight Perception  ~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~  Chi-Square Tests & Regression on Sunscreen Usage and Weight Perception  ~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 list_chi_square <- conduct_chi_square_test(df_nhanes = df_merge
                                          , variable_1 = "weight_perception"
                                          , variable_2 = "sunscreen_usage_cat")
 
-list_regression_weight_perception_sunscreen <- run_univariate_lm_models(df_nhanes = df_merge
-                                                                     , outcome = "sunscreen_usage_ordinal"
-                                                                     , predictor = "weight_perception")
+list_lm_sunscreen_weight_perception <- run_univariate_lm_models(df_nhanes = df_merge
+                                                                , outcome = "sunscreen_usage_ordinal"
+                                                                , predictor = "weight_perception"
+                                                                , by_group = TRUE)
+
+list_lm_sunscreen_race_weight_perception <- run_univariate_lm_models(df_nhanes = df_merge
+                                                                , outcome = "sunscreen_usage_ordinal"
+                                                                , predictor = "race_weight_perception"
+                                                                , by_group = FALSE)
+
+list_lm_sunscreen_race <- run_univariate_lm_models(df_nhanes = df_merge
+                                                   , outcome = "sunscreen_usage_ordinal"
+                                                   , predictor = "race"
+                                                   , by_group = FALSE)
+
+list_lm_sunscreen_race_weight_perception_sep <- run_univariate_lm_models(df_nhanes = df_merge
+                                                   , outcome = "sunscreen_usage_ordinal"
+                                                   , predictor = c("race", "weight_perception")
+                                                   , by_group = FALSE)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Step-wise Regression Models  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
