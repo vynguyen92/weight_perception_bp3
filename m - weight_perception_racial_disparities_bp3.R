@@ -66,6 +66,14 @@ df_population_stats_youth <- create_table_population_statistics(df_nhanes = df_m
                                                                 , boolean = FALSE)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~  Chi-Square Tests on Sunscreen Usage and Weight Perception  ~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+list_chi_square <- conduct_chi_square_test(df_nhanes = df_merge
+                                         , variable_1 = "weight_perception"
+                                         , variable_2 = "sunscreen_usage_cat")
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Step-wise Regression Models  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
@@ -192,4 +200,5 @@ setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
 alphabet_soup_rsq(regression_stratified = list_regression_stats_stratified
                   , regression_all = list_regression_stats
                   , name_of_folder = "Alphabet Soup Plot - Contribution of sunscreen for BP3"
-                  , current_directory = working_directory)
+                  , current_directory = working_directory
+                  , is_adult = FALSE)
