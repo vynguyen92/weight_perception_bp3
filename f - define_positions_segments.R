@@ -1,6 +1,6 @@
 define_positions_segments <- function(ordered_race)
 {
-  print(ordered_race)
+  # print(ordered_race)
   
   num_races <- length(ordered_race)
   
@@ -17,7 +17,7 @@ define_positions_segments <- function(ordered_race)
   df_ordered_positions[position_all[1],"position"] <- df_ordered_positions[position_all[1],"position"] - 0.25 
   df_ordered_positions[position_all[2],"position"] <- df_ordered_positions[position_all[2],"position"] + 0.25 
   
-  View(df_ordered_positions)
+  # View(df_ordered_positions)
   
   return(df_ordered_positions)
 }

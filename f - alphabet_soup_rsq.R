@@ -84,7 +84,7 @@ alphabet_soup_rsq <- function(regression_stratified
 
   num_combinations <- nrow(df_combination)
 
-  for(i in seq(num_combinations)[3])
+  for(i in seq(num_combinations))
   {
     subset_combination <- df_combination[i,]
     # print(subset_combination)
@@ -192,6 +192,9 @@ alphabet_soup_rsq <- function(regression_stratified
                gsub("sunscreen_usage_ordinal"
                     , "sunscreen usage"
                     , .) %>%
+               gsub("INDFMPIR"
+                    , "PIR"
+                    , .) %>%
                gsub("race/ethinicity_body dissatisfaction"
                     , "combination(race/ethinicity, body dissatisfaction)"
                     , .)) 
@@ -208,8 +211,6 @@ alphabet_soup_rsq <- function(regression_stratified
                                                , levels = current_levels_regression_models))
     # View(subset_stats_rsq)
     # print(subset_stats_rsq$regression_formula_label %>% unique(.))
-
-    print(unlist(df_positions_of_segments$position))
     
     alphabet_soup_plot <- ggplot(data = subset_stats_rsq
                                  , mapping = aes(x = !!sym(rsq_pattern)
@@ -281,19 +282,19 @@ alphabet_soup_rsq <- function(regression_stratified
                            , ".pdf"
                            , sep = "")
 
-    # # Save the panel of plots as a png and pdf
-    # print(plot_name.png)
-    # ggsave(filename = plot_name.png
-    #        , plot = alphabet_soup_plot
-    #        , width = 14
-    #        , height = 9
-    #        , units = "in")
-    # print(plot_name.pdf)
-    # ggsave(filename = plot_name.pdf
-    #        , plot = alphabet_soup_plot
-    #        , width = 14
-    #        , height = 9
-    #        , units = "in")
+    # Save the panel of plots as a png and pdf
+    print(plot_name.png)
+    ggsave(filename = plot_name.png
+           , plot = alphabet_soup_plot
+           , width = 14
+           , height = 9
+           , units = "in")
+    print(plot_name.pdf)
+    ggsave(filename = plot_name.pdf
+           , plot = alphabet_soup_plot
+           , width = 14
+           , height = 9
+           , units = "in")
 
   }
 
