@@ -73,6 +73,10 @@ list_chi_square <- conduct_chi_square_test(df_nhanes = df_merge
                                          , variable_1 = "weight_perception"
                                          , variable_2 = "sunscreen_usage_cat")
 
+list_regression_weight_perception_sunscreen <- run_univariate_lm_models(df_nhanes = df_merge
+                                                                     , outcome = "sunscreen_usage_ordinal"
+                                                                     , predictor = "weight_perception")
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Step-wise Regression Models  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
