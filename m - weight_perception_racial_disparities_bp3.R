@@ -73,6 +73,31 @@ list_chi_square <- conduct_chi_square_test(df_nhanes = df_merge
                                          , variable_1 = "weight_perception"
                                          , variable_2 = "sunscreen_usage_cat")
 
+list_polyr_sunscreen_weight_perception <- run_univariate_ordinal_models(df_nhanes = df_merge
+                                                                        , outcome = "sunscreen_usage_cat"
+                                                                        , predictor = "weight_perception"
+                                                                        , by_group = TRUE)
+
+list_polyr_sunscreen_race_weight_perception <- run_univariate_ordinal_models(df_nhanes = df_merge
+                                                                        , outcome = "sunscreen_usage_cat"
+                                                                        , predictor = "race_weight_perception"
+                                                                        , by_group = FALSE)
+
+list_polyr_sunscreen_race <- run_univariate_ordinal_models(df_nhanes = df_merge
+                                                           , outcome = "sunscreen_usage_cat"
+                                                           , predictor = "race"
+                                                           , by_group = FALSE)
+
+list_polyr_sunscreen_PIR <- run_univariate_ordinal_models(df_nhanes = df_merge
+                                                           , outcome = "sunscreen_usage_cat"
+                                                           , predictor = "INDFMPIR"
+                                                           , by_group = FALSE)
+
+list_polyr_sunscreen_PIR_race <- run_univariate_ordinal_models(df_nhanes = df_merge
+                                                          , outcome = "sunscreen_usage_cat"
+                                                          , predictor = c("race", "INDFMPIR")
+                                                          , by_group = FALSE)
+
 list_lm_sunscreen_weight_perception <- run_univariate_lm_models(df_nhanes = df_merge
                                                                 , outcome = "sunscreen_usage_ordinal"
                                                                 , predictor = "weight_perception"
@@ -144,7 +169,7 @@ list_regression_stats_youth <- run_regression_models(df_nhanes = df_merge_youth
                                                , regression_formulas = vector_regression_models_youth)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Stratified Regression Models  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~  Regression Models in Non-Hispanic Blacks - Weight Perception Compared to All  ~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 vector_stratified_models <- c("log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI"
@@ -166,12 +191,28 @@ vector_covariates_stratified <- c("race"
                                   , "sunscreen_usage_ordinal")
 
 vector_covariates_stratified_youth <- c("race"
-                                  , "RIDAGEYR" 
-                                  , "URXUCR"  
-                                  , "BMXBMI"
-                                  , "INDFMPIR"
-                                  , "SDDSRVYR"
-                                  , "weight_perception")
+                                        , "RIDAGEYR" 
+                                        , "URXUCR"  
+                                        , "BMXBMI"
+                                        , "INDFMPIR"
+                                        , "SDDSRVYR"
+                                        , "weight_perception")
+
+list_perception_vs_all_blacks <- run_perception_vs_all_models(df_nhanes = df_merge
+                                                              , covariates = vector_covariates_stratified
+                                                              , chemical = chemical_biomarker
+                                                              , regression_formulas = vector_stratified_models
+                                                              , race_group = "Non-Hispanic Black")
+
+list_perception_vs_all_blacks_youth <- run_perception_vs_all_models(df_nhanes = df_merge
+                                                                    , covariates = vector_covariates_stratified_youth
+                                                                    , chemical = chemical_biomarker
+                                                                    , regression_formulas = vector_stratified_models_youth
+                                                                    , race_group = "Non-Hispanic Black")
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Stratified Regression Models  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 list_regression_stats_stratified <- run_stratified_regression_models(df_nhanes = df_merge
                                                                      , covariates = vector_covariates_stratified
