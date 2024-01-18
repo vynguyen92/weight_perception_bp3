@@ -322,6 +322,7 @@ arrow_forest_plot_all_stratified <- function(list_all
                             , ncol = 1
                             , nrow = 2
                             , heights = c(0.8,10))
+    
     if(is_adult == TRUE) {
       plot_name.png <- paste("forest_plot_"
                            , combination_i %>%
