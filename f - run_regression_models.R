@@ -43,7 +43,8 @@ run_regression_models <- function(df_nhanes
 
     df_tidy_same_sample_size_i <- lm_model_same_sample_size %>%
       tidy(.) %>%
-      mutate(percent_diff = (10^estimate-1)*100) %>%
+      mutate(fold_diff = 10^estimate) %>%
+      mutate(percent_diff = (fold_diff-1)*100) %>%
       mutate(regression_formula = regression_model_i) %>%
       mutate(account_sampling_design = "unweighted") %>%
       mutate(type_sample_size = "same across models")
@@ -104,7 +105,8 @@ run_regression_models <- function(df_nhanes
 
     df_tidy_svy_same_sample_size_i <- svy_model_same_sample_size %>%
       tidy(.) %>%
-      mutate(percent_diff = (10^estimate-1)*100) %>%
+      mutate(fold_diff = 10^estimate) %>%
+      mutate(percent_diff = (fold_diff-1)*100) %>%
       mutate(regression_formula = regression_model_i) %>%
       mutate(account_sampling_design = "weighted") %>%
       mutate(type_sample_size = "same across models") 
@@ -172,7 +174,8 @@ run_regression_models <- function(df_nhanes
 
     df_tidy_max_sample_size_i <- lm_model_max_sample_size %>%
       tidy(.)  %>%
-      mutate(percent_diff = (10^estimate-1)*100) %>%
+      mutate(fold_diff = 10^estimate) %>%
+      mutate(percent_diff = (fold_diff-1)*100) %>%
       mutate(regression_formula = regression_model_i) %>%
       mutate(account_sampling_design = "unweighted") %>%
       mutate(type_sample_size = "max sample size")
@@ -233,7 +236,8 @@ run_regression_models <- function(df_nhanes
 
     df_tidy_svy_dif_sample_size_i <- svy_model_dif_sample_size %>%
       tidy(.) %>%
-      mutate(percent_diff = (10^estimate-1)*100) %>%
+      mutate(fold_diff = 10^estimate) %>%
+      mutate(percent_diff = (fold_diff-1)*100) %>%
       mutate(regression_formula = regression_model_i) %>%
       mutate(account_sampling_design = "weighted") %>%
       mutate(type_sample_size = "max sample size")
@@ -279,15 +283,15 @@ run_regression_models <- function(df_nhanes
                       , by = NULL)
   # View(df_glance)
 
-  df_regression <- full_join(df_tidy
-                             , df_glance
-                             , by = c("regression_formula"
-                                      , "account_sampling_design"
-                                      , "type_sample_size")) %>%
-    mutate(covariates = gsub("log10\\(URXBP3\\) \\~ race_weight_perception \\+ |log10\\(URXBP3\\) \\~ race (\\+ |\\+ weight_perception \\+ )"
-                             , ""
-                             , regression_formula))
-  View(df_regression)
+  # df_regression <- full_join(df_tidy
+  #                            , df_glance
+  #                            , by = c("regression_formula"
+  #                                     , "account_sampling_design"
+  #                                     , "type_sample_size")) %>%
+  #   mutate(covariates = gsub("log10\\(URXBP3\\) \\~ race_weight_perception \\+ |log10\\(URXBP3\\) \\~ race (\\+ |\\+ weight_perception \\+ )"
+  #                            , ""
+  #                            , regression_formula))
+  # View(df_regression)
 
   list_regression <- list()
   
