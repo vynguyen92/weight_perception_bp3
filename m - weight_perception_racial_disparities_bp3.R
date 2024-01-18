@@ -243,17 +243,31 @@ boxplot_chemical_race_weight_perception(df_nhanes = df_merge
                                         , current_directory = working_directory
                                         ,is_adult=FALSE)
 
+setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
+arrow_forest_plot_same_ref(list_all = list_regression_stats
+                           , list_ref = list_perception_vs_all_blacks
+                           , name_of_folder = "Arrow Forest Plot Same Reference - Differences by race and weight perception"
+                           , current_directory = working_directory
+                           , is_adult = TRUE)
+
+setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
+arrow_forest_plot_same_ref(list_all = list_regression_stats_youth
+                           , list_ref = list_perception_vs_all_blacks_youth
+                           , name_of_folder = "Arrow Forest Plot Same Reference - Differences by race and weight perception"
+                           , current_directory = working_directory
+                           , is_adult = FALSE)
+
 
 setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
 arrow_forest_plot_all_stratified(list_all = list_regression_stats
                                  , list_stratified = list_regression_stats_stratified
-                                 , name_of_folder = "Forest Plot - Differences by race and weight perception"
+                                 , name_of_folder = "Arrow Forest Plot - Differences by race and weight perception"
                                  , current_directory = working_directory
                                  , is_adult = TRUE)
 
 arrow_forest_plot_all_stratified(list_all = list_regression_stats_youth
                                  , list_stratified = list_regression_stats_stratified_youth
-                                 , name_of_folder = "Forest Plot - Differences by race and weight perception"
+                                 , name_of_folder = "Arrow Forest Plot - Differences by race and weight perception"
                                  , current_directory = working_directory
                                  , is_adult = FALSE)
 
