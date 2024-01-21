@@ -78,7 +78,7 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
     group_by(race, weight_perception) %>%
     summarise(n = n()) %>%
     ungroup(.)
-  # View(df_stats_sample_size)
+  View(df_stats_sample_size)
   
   df_sample_size_label <- df_stats_sample_size %>%
     mutate(weight_perception = gsub(" "
