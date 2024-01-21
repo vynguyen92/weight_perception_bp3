@@ -228,7 +228,6 @@ alphabet_soup_rsq <- function(regression_stratified
                                    , y = unlist(df_positions_of_segments$position) #c(1, 2, 3, 3.75, 4.25, 5, 6, 7)
                                    , yend = unlist(df_positions_of_segments$position) #c(1, 2, 3, 3.75, 4.25, 5, 6, 7)
                                    , group = race_weight_perception_together
-                                   , color = race_weight_perception_together
                                    )
                    , inherit.aes = FALSE
                    ) +
@@ -250,8 +249,7 @@ alphabet_soup_rsq <- function(regression_stratified
       xlab("Coefficient of Determination, R2") +
       xlim(0,0.5) +
       guides(shape = guide_legend(title = "Regression Models")
-             , color = "none"
-                                    ) +
+             , color = "none") +
       theme(legend.position = "top"
             , legend.direction = "vertical"
             , axis.title.y = element_blank()
