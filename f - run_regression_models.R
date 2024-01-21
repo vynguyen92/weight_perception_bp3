@@ -94,6 +94,8 @@ run_regression_models <- function(df_nhanes
     df_nhanes_same_size_svy <- df_nhanes_same_size_svy %>%
       mutate(adjusted_weights = WT_URXBP3/num_cycles)
 
+    options(survey.lonely.psu="remove")
+    
     nhanes_design_same_size <- svydesign(ids = ~SDMVPSU
                                          , strata = ~SDMVSTRA
                                          , weights = ~adjusted_weights
@@ -225,6 +227,8 @@ run_regression_models <- function(df_nhanes
     df_svy_nhanes_dif_size <- df_svy_nhanes_dif_size %>%
       mutate(adjusted_weights = WT_URXBP3/num_cycles)
 
+    options(survey.lonely.psu="remove")
+    
     nhanes_design_dif_size <- svydesign(ids = ~SDMVPSU
                                          , strata = ~SDMVSTRA
                                          , weights = ~adjusted_weights
@@ -270,6 +274,8 @@ run_regression_models <- function(df_nhanes
   df_tidy <- reduce(list_tidy
                     , full_join
                     , by = NULL) %>%
+    mutate(fold_diff_ci_low = 10^(estimate - 1.96*std.error)) %>%
+    mutate(fold_diff_ci_high = 10^(estimate + 1.96*std.error)) %>%
     mutate(perc_diff_ci_low = percent_diff - 1.96*((10^std.error-1)*100)) %>%
     mutate(perc_diff_ci_high = percent_diff + 1.96*((10^std.error-1)*100)) %>%
     mutate(asterisks = case_when(p.value > 0.05 ~ ""

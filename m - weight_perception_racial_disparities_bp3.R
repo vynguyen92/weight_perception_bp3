@@ -164,9 +164,9 @@ list_regression_stats <- run_regression_models(df_nhanes = df_merge
                                              , regression_formulas = vector_regression_models)
 
 list_regression_stats_youth <- run_regression_models(df_nhanes = df_merge_youth
-                                               , covariates = vector_covariates_youth
-                                               , chemical = chemical_biomarker
-                                               , regression_formulas = vector_regression_models_youth)
+                                                     , covariates = vector_covariates_youth
+                                                     , chemical = chemical_biomarker
+                                                     , regression_formulas = vector_regression_models_youth)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~  Regression Models in Non-Hispanic Blacks - Weight Perception Compared to All  ~~~~~~~~~~~~~~#
@@ -204,7 +204,7 @@ list_perception_vs_all_blacks <- run_perception_vs_all_models(df_nhanes = df_mer
                                                               , regression_formulas = vector_stratified_models
                                                               , race_group = "Non-Hispanic Black")
 
-list_perception_vs_all_blacks_youth <- run_perception_vs_all_models(df_nhanes = df_merge
+list_perception_vs_all_blacks_youth <- run_perception_vs_all_models(df_nhanes = df_merge_youth
                                                                     , covariates = vector_covariates_stratified_youth
                                                                     , chemical = chemical_biomarker
                                                                     , regression_formulas = vector_stratified_models_youth
@@ -228,20 +228,36 @@ list_regression_stats_stratified_youth <- run_stratified_regression_models(df_nh
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Visualization  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Box plots  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
 setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
 boxplot_chemical_race_weight_perception(df_nhanes = df_merge
                                         , covariates = vector_covariates
                                         , chemical = chemical_biomarker
                                         , name_of_folder = "Box Plot - BP3 by race and weight perception"
-                                        , current_directory = working_directory,
-                                        is_adult=TRUE)
+                                        , current_directory = working_directory
+                                        , is_adult = TRUE)
 
-boxplot_chemical_race_weight_perception(df_nhanes = df_merge
+boxplot_chemical_race_weight_perception(df_nhanes = df_merge_youth
                                         , covariates = vector_covariates_youth
                                         , chemical = chemical_biomarker
                                         , name_of_folder = "Box Plot - BP3 by race and weight perception"
                                         , current_directory = working_directory
-                                        ,is_adult=FALSE)
+                                        , is_adult = FALSE)
+
+panel_boxplot_chemical_race_weight_perception(df_adults = df_merge
+                                              , df_youth = df_merge_youth
+                                              , covariates_adults = vector_covariates
+                                              , covariates_youth = vector_covariates_youth
+                                              , chemical = chemical_biomarker
+                                              , name_of_folder = "Panel Box Plot - BP3 by race and weight perception"
+                                              , current_directory = working_directory)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Arrow forest plots  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
 arrow_forest_plot_same_ref(list_all = list_regression_stats
@@ -271,9 +287,13 @@ arrow_forest_plot_all_stratified(list_all = list_regression_stats_youth
                                  , current_directory = working_directory
                                  , is_adult = FALSE)
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Alphabet soup plots  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
 setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
 alphabet_soup_rsq(regression_stratified = list_regression_stats_stratified
                   , regression_all = list_regression_stats
                   , name_of_folder = "Alphabet Soup Plot - Contribution of sunscreen for BP3"
                   , current_directory = working_directory
-                  , is_adult = FALSE)
+                  , is_adult = TRUE)

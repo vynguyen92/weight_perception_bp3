@@ -35,7 +35,8 @@ run_stratified_regression_models <- function(df_nhanes
                       , data = .) %>%
                tidy(.)) %>%
       ungroup(.) %>%
-      mutate(percent_diff = (10^estimate-1)*100) %>%
+      mutate(fold_diff = 10^estimate) %>%
+      mutate(percent_diff = (fold_diff-1)*100) %>%
       mutate(regression_formula = regression_model_i) %>%
       mutate(account_sampling_design = "unweighted") %>%
       mutate(type_sample_size = "same across models")
@@ -79,7 +80,8 @@ run_stratified_regression_models <- function(df_nhanes
                                  , regression_formula = regression_model_i
                                  , stats = "tidy")) %>%
       ungroup(.) %>%
-      mutate(percent_diff = (10^estimate-1)*100) %>%
+      mutate(fold_diff = 10^estimate) %>%
+      mutate(percent_diff = (fold_diff-1)*100) %>%
       mutate(regression_formula = regression_model_i) %>%
       mutate(account_sampling_design = "weighted") %>%
       mutate(type_sample_size = "same across models")
@@ -110,6 +112,8 @@ run_stratified_regression_models <- function(df_nhanes
   df_tidy <- reduce(list_tidy
                     , full_join
                     , by = NULL) %>%
+    mutate(fold_diff_ci_low = 10^(estimate - 1.96*std.error)) %>%
+    mutate(fold_diff_ci_high = 10^(estimate + 1.96*std.error)) %>%
     mutate(perc_diff_ci_low = percent_diff - 1.96*((10^std.error-1)*100)) %>%
     mutate(perc_diff_ci_high = percent_diff + 1.96*((10^std.error-1)*100)) %>%
     mutate(asterisks = case_when(p.value > 0.05 ~ ""
