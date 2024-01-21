@@ -273,10 +273,11 @@ arrow_forest_plot_same_ref(list_all = list_regression_stats_youth
                            , current_directory = working_directory
                            , is_adult = FALSE)
 
-arrow_forest_plot_same_ref_adult_youth(list_adults = list(list_regression_stats
-                                                          , list_perception_vs_all_blacks)
-                                       , list_youth = list(list_regression_stats_youth
-                                                           , list_perception_vs_all_blacks_youth)
+setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
+arrow_forest_plot_same_ref_adult_youth(list_adults = list("all" = list_regression_stats
+                                                          , "ref" = list_perception_vs_all_blacks)
+                                       , list_youth = list("all" = list_regression_stats_youth
+                                                           , "ref" = list_perception_vs_all_blacks_youth)
                                        , name_of_folder = "Arrow Forest Plot Same Reference Adult & Youth - Differences by race and weight perception"
                                        , current_directory = working_directory)
 
