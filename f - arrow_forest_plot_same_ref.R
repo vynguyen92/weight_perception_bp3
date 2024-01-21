@@ -105,14 +105,17 @@ arrow_forest_plot_same_ref <- function(list_all
       filter(type_sample_size == type_sample_size_i) %>%
       filter(covariates == covariates_i) %>% 
       mutate(label_ci = paste(fold_diff %>%
-                                round(.)
-                              , "% ["
-                              , perc_diff_ci_low %>%
-                                round(.)
-                              , "%,"
-                              , perc_diff_ci_high %>%
-                                round(.)
-                              , "%]"
+                                round(.
+                                      , digits = 2)
+                              , " ["
+                              , fold_diff_ci_low %>%
+                                round(.
+                                      , digits = 2)
+                              , ", "
+                              , fold_diff_ci_high%>%
+                                round(.
+                                      , digits = 2)
+                              , "]"
                               , sep = "")) %>%
       add_row(term = "raceNon-Hispanic Black"
               , race = "Non-Hispanic Black"
@@ -192,8 +195,8 @@ arrow_forest_plot_same_ref <- function(list_all
                          )) +
       guides(color = guide_legend(title = "Weight Perception")) +
       theme(legend.position = "top"
-            , legend.text = element_text(size = 14)
-            , legend.title = element_text(size = 14))
+            , legend.text = element_text(size = 16)
+            , legend.title = element_text(size = 16))
     
     
     legend_colors <- get_legend(dummy_plot)
@@ -240,26 +243,23 @@ arrow_forest_plot_same_ref <- function(list_all
                 , mapping = aes(x = race
                                 , y = fold_diff
                                 , label = asterisks)
-                , size = 5
+                , size = 8
                 , nudge_x = 0.15
-                , nudge_y = -0.35
+                , nudge_y = -0.005
                 , inherit.aes = FALSE)  +
       geom_text_repel(data = subset_regression
                       , mapping = aes(x = race
                                       , y = fold_diff
                                       , label = label_ci)
-                      , size = 3
+                      , size = 4
                       , nudge_x = -0.3
                       , segment.color = 'transparent'
                       , inherit.aes = FALSE) +
-      geom_hline(yintercept = 0) +
-      labs(y = "Percent Difference of BP3" #relative to Non-Hispanic Black Women"
-           # , tag = "A"
-           ) +
+      geom_hline(yintercept = 1) +
+      labs(y = "Fold Difference of BP3 relative to Non-Hispanic Black Women") +
       theme(axis.title.x = element_blank()
-            , plot.title = element_text(size = 14)
             , axis.text = element_text(size = 12)
-            , axis.title.y = element_text(size = 14))
+            , axis.title.y = element_text(size = 16))
     
     final_plot <- ggarrange(legend_colors
                             , arrow_forest_plot
