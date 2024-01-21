@@ -104,7 +104,7 @@ arrow_forest_plot_same_ref <- function(list_all
       filter(account_sampling_design == type_sampling_design_i) %>%
       filter(type_sample_size == type_sample_size_i) %>%
       filter(covariates == covariates_i) %>% 
-      mutate(label_ci = paste(percent_diff %>%
+      mutate(label_ci = paste(fold_diff %>%
                                 round(.)
                               , "% ["
                               , perc_diff_ci_low %>%
@@ -121,6 +121,7 @@ arrow_forest_plot_same_ref <- function(list_all
               , std.error = NA
               , statistic = NA
               , p.value = NA
+              , fold_diff = 1
               , percent_diff = 0
               , regression_formula = NA
               , account_sampling_design = type_sampling_design_i
@@ -145,8 +146,8 @@ arrow_forest_plot_same_ref <- function(list_all
     
     df_stats_widening_gap <- df_widening_gaps %>%
       group_by(race) %>%
-      summarise(dif = diff(percent_diff)
-                , average = mean(percent_diff)) %>%
+      summarise(dif = diff(fold_diff)
+                , average = mean(fold_diff)) %>%
       ungroup(.) %>%
       arrange(dif, average)
     # View(df_stats_widening_gap)
@@ -158,15 +159,15 @@ arrow_forest_plot_same_ref <- function(list_all
     subset_regression$race <- factor(subset_regression$race
                                      , levels = race_ordered_by_stats)
     
-    max_perc_diff <- subset_regression %>%
-      pull(percent_diff) %>%
+    max_diff_stat <- subset_regression %>%
+      pull(fold_diff) %>%
       max(.)
-    # print(max_perc_diff)
+    # print(max_diff_stat)
     
-    min_perc_diff <- subset_regression %>%
-      pull(percent_diff) %>%
+    min_diff_stat <- subset_regression %>%
+      pull(fold_diff) %>%
       min(.)
-    # print(min_perc_diff)
+    # print(min_diff_stat)
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Extract Legend from Dummy Plot  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -179,7 +180,7 @@ arrow_forest_plot_same_ref <- function(list_all
                                                                           , "about the right weight"
                                                              )))) +
       geom_point(mapping = aes(x = race
-                               , y = percent_diff
+                               , y = fold_diff
                                , color = weight_perception)
                  , size = 4) +
       scale_color_manual(values = c("black"
@@ -216,8 +217,8 @@ arrow_forest_plot_same_ref <- function(list_all
       geom_segment(data = subset_regression_right_weight
                    , mapping = aes(x = race
                                    , xend = race
-                                   , y = subset_regression_all$percent_diff
-                                   , yend = percent_diff)
+                                   , y = subset_regression_all$fold_diff
+                                   , yend = fold_diff)
                    , arrow = arrow(length = unit(0.2, "inches"))
                    , size = 2
                    , color = "blue"
@@ -225,19 +226,19 @@ arrow_forest_plot_same_ref <- function(list_all
       geom_segment(data = subset_regression_overweight
                    , mapping = aes(x = race
                                    , xend = race
-                                   , y = subset_regression_all$percent_diff
-                                   , yend = percent_diff)
+                                   , y = subset_regression_all$fold_diff
+                                   , yend = fold_diff)
                    , arrow = arrow(length = unit(0.2, "inches"))
                    , size = 2
                    , color = "red"
                    , inherit.aes = FALSE) +
       geom_point(data = subset_regression_all
                  , mapping = aes(x = race
-                                 , y = percent_diff)
+                                 , y = fold_diff)
                  , size = 3.5)  +
       geom_text(data = subset_regression
                 , mapping = aes(x = race
-                                , y = percent_diff
+                                , y = fold_diff
                                 , label = asterisks)
                 , size = 5
                 , nudge_x = 0.15
@@ -245,7 +246,7 @@ arrow_forest_plot_same_ref <- function(list_all
                 , inherit.aes = FALSE)  +
       geom_text_repel(data = subset_regression
                       , mapping = aes(x = race
-                                      , y = percent_diff
+                                      , y = fold_diff
                                       , label = label_ci)
                       , size = 3
                       , nudge_x = -0.3
