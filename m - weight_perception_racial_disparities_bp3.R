@@ -27,13 +27,24 @@ df_merge_youth <- merge_nhanes_dataset_together(list_dataset = list("self_report
                                                 , boolean_adult = FALSE)
 
 # count the excluded participants and the reasons for exclusion
-participant_counts <- count_excluded_participants(list_dataset = list("self_reported_weight" = df_self_reported_weight
-                                                              , "dermatology" = df_dermatology
-                                                              , "chemicals" = chemicals_clean
-                                                              , "demographics" = demographics_clean
-                                                              , "response" = response_clean
-                                                              , "weights" = weights_clean)
-                                          , vector_chemical_codenames = chemical_biomarker)
+participant_counts_youth <- count_excluded_participants(list_dataset = list("self_reported_weight" = df_self_reported_weight_youth
+                                                                      , "chemicals" = chemicals_clean
+                                                                      , "demographics" = demographics_clean
+                                                                      , "response" = response_clean
+                                                                      , "weights" = weights_clean)
+                                                  , vector_chemical_codenames = chemical_biomarker
+                                                  , weight_perception = "WHQ030M"
+                                                  , is_adult = FALSE)
+
+participant_counts <- count_excluded_participants(list_dataset = list("self_reported_weight" = df_self_reported_weight 
+                                                                            , "dermatology" = df_dermatology
+                                                                            , "chemicals" = chemicals_clean
+                                                                            , "demographics" = demographics_clean
+                                                                            , "response" = response_clean
+                                                                            , "weights" = weights_clean)
+                                                  , vector_chemical_codenames = chemical_biomarker
+                                                  , weight_perception = "WHQ030"
+                                                  , is_adult = TRUE)
 
 df_merge <- merge_nhanes_dataset_together(list_dataset = list("self_reported_weight" = df_self_reported_weight
                                                               , "dermatology" = df_dermatology
@@ -48,10 +59,11 @@ df_merge <- merge_nhanes_dataset_together(list_dataset = list("self_reported_wei
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 continuous_variables <- c("RIDAGEYR" 
-                           , "URXUCR"  
-                           , "BMXBMI"
-                           , "INDFMPIR"
-                           , "URXBP3")
+                          , "URXUCR"  
+                          , "BMXBMI"
+                          , "INDFMPIR"
+                          , "URXBP3"
+                          , "WT_URXBP3")
 
 categorical_variables <- c("weight_perception"
                            , "sunscreen_usage_cat")
@@ -63,7 +75,7 @@ df_population_stats <- create_table_population_statistics(df_nhanes = df_merge
 df_population_stats_youth <- create_table_population_statistics(df_nhanes = df_merge_youth
                                                                 , continuous_variables = continuous_variables
                                                                 , categorical_variables = "weight_perception"
-                                                                , boolean = FALSE)
+                                                                , boolean_adult = FALSE)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~  Chi-Square Tests & Regression on Sunscreen Usage and Weight Perception  ~~~~~~~~~~~~~~~#

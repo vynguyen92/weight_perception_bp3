@@ -1,5 +1,7 @@
 count_excluded_participants <- function(list_dataset
-                                        , vector_chemical_codenames)
+                                        , vector_chemical_codenames
+                                        , weight_perception
+                                        , is_adult = TRUE)
 {
   library(tidyverse)
   
@@ -7,13 +9,16 @@ count_excluded_participants <- function(list_dataset
   
   df_merged1 <- list_dataset[["self_reported_weight"]] %>%
     select(SEQN
-           , WHD010
-           , WHD020
-           , WHQ030
-           , WHQ040) %>%
-    mutate(weight_perception = case_when(WHQ030 == 1 ~ "_overweight"
-                                         , WHQ030 == 2 ~ "_underweight"
-                                         , WHQ030 == 3 ~ "_about the right weight") ) %>%
+           , all_of(weight_perception)) 
+  
+  index_weight_perception <- which(colnames(df_merged1) == weight_perception)
+  
+  colnames(df_merged1)[index_weight_perception] <- "weight_perception"
+  
+  df_merged1 <- df_merged1 %>%
+    mutate(weight_perception = case_when(weight_perception == 1 ~ "_overweight"
+                                         , weight_perception == 2 ~ "_underweight"
+                                         , weight_perception == 3 ~ "_about the right weight") ) %>%
     full_join(.
               , list_dataset[["chemicals"]] %>%
                 filter(SDDSRVYR != -1) %>%
@@ -41,44 +46,54 @@ count_excluded_participants <- function(list_dataset
                        , BMXBMI)
               , by = "SEQN") %>%
     full_join(.
-              , list_dataset[["dermatology"]] %>%
-                select("DEQ034D"
-                       , "DED031"
-                       , "SEQN") 
-              , by = "SEQN") %>%
-    full_join(.
               , list_dataset[["weights"]] %>%
+                filter(SDDSRVYR != -1) %>%
                 select("SEQN"
                        , "WT_URXBP3"
                        , "WTINT2YR"
                        , "WTMEC2YR")
-              , by = "SEQN") %>%
-    mutate(skin_tone_cat = case_when(DED031 == 1 ~ "severe sunburn with blisters"
-                                     , DED031 == 2 ~ "severe sunburn for a few days with peeling"
-                                     , DED031 == 3 ~ "mildly burned with some tanning"
-                                     , DED031 == 4 ~ "turned darker without a sunburn"
-                                     , DED031 == 5 ~ "nothing would happen in half an hour")) %>%
-    mutate(sunscreen_usage_cat = case_when(DEQ034D == 1 ~ "_always"
-                                           , DEQ034D == 2 ~ "_most of the time"
-                                           , DEQ034D == 3 ~ "_sometimes"
-                                           , DEQ034D == 4 ~ "_rarely"
-                                           , DEQ034D == 5 ~ "_never") %>%
-             factor(.
-                    , levels = c("_always"
-                                 , "_most of the time"
-                                 , "_sometimes"
-                                 , "_rarely"
-                                 , "_never"))) %>%
-    mutate(sunscreen_usage_ordinal = case_when(sunscreen_usage_cat == "_always" ~ 5
-                                               , sunscreen_usage_cat == "_most of the time" ~ 4
-                                               , sunscreen_usage_cat == "_sometimes" ~ 3
-                                               , sunscreen_usage_cat == "_rarely" ~ 2
-                                               , sunscreen_usage_cat == "_never" ~ 1))
+              , by = "SEQN") 
+  
+  if(is_adult == TRUE)
+  {
+    df_merged1 <- df_merged1 %>%
+      full_join(.
+                , list_dataset[["dermatology"]] %>%
+                  select("DEQ034D"
+                         , "DED031"
+                         , "SEQN") 
+                , by = "SEQN") %>%
+      mutate(skin_tone_cat = case_when(DED031 == 1 ~ "severe sunburn with blisters"
+                                       , DED031 == 2 ~ "severe sunburn for a few days with peeling"
+                                       , DED031 == 3 ~ "mildly burned with some tanning"
+                                       , DED031 == 4 ~ "turned darker without a sunburn"
+                                       , DED031 == 5 ~ "nothing would happen in half an hour")) %>%
+      mutate(sunscreen_usage_cat = case_when(DEQ034D == 1 ~ "_always"
+                                             , DEQ034D == 2 ~ "_most of the time"
+                                             , DEQ034D == 3 ~ "_sometimes"
+                                             , DEQ034D == 4 ~ "_rarely"
+                                             , DEQ034D == 5 ~ "_never") %>%
+               factor(.
+                      , levels = c("_always"
+                                   , "_most of the time"
+                                   , "_sometimes"
+                                   , "_rarely"
+                                   , "_never"))) %>%
+      mutate(sunscreen_usage_ordinal = case_when(sunscreen_usage_cat == "_always" ~ 5
+                                                 , sunscreen_usage_cat == "_most of the time" ~ 4
+                                                 , sunscreen_usage_cat == "_sometimes" ~ 3
+                                                 , sunscreen_usage_cat == "_rarely" ~ 2
+                                                 , sunscreen_usage_cat == "_never" ~ 1))
+  } else {
+    df_merged1 <- df_merged1
+  }
+    
+    
   print("Number of people with survey information. This is where we start")
   number_with_survey = nrow(df_merged1)
   print(number_with_survey)
   
-  df_merged2 <- df_merged1 %>% filter(WHQ030 %in% seq(3))
+  df_merged2 <- df_merged1 %>% filter(is.na(weight_perception) == FALSE)
   print("Number of people with who did not answer how they feel about weight")
   num_no_weight_feeling = nrow(df_merged1)-nrow(df_merged2)
   print(num_no_weight_feeling)
@@ -124,14 +139,19 @@ count_excluded_participants <- function(list_dataset
   print("Total number of subjects after removeing those that do not have BP3 measurements")
   print(nrow(df_merge5))
   
-  df_merge6 <- df_merge5 %>% filter(!is.na(sunscreen_usage_cat))
-  print("Total number of subjects who do not have sunscreen measurements")
-  num_no_sunscreen = nrow(df_merge5) - nrow(df_merge6)
-  print(num_no_sunscreen)
-  print("Total number of subjects after removeing those that do not have sunscreen measurements")
-  print(nrow(df_merge6))
+  if(is_adult == TRUE)
+  {
+    df_merge6 <- df_merge5 %>% filter(!is.na(sunscreen_usage_cat))
+    print("Total number of subjects who do not have sunscreen measurements")
+    num_no_sunscreen = nrow(df_merge5) - nrow(df_merge6)
+    print(num_no_sunscreen)
+    print("Total number of subjects after removeing those that do not have sunscreen measurements")
+    print(nrow(df_merge6))
+  } else {
+    df_merge6 <- df_merge5
+  }
   
-  # remove people that do not have poverty income ratio, BMI, creatine measurements
+  # remove people that do not have poverty income ratio, BMI, creatinine measurements
   
   df_merge7 <- df_merge6 %>% filter(!is.na(INDFMPIR)) 
   print("The number of subjects that do not have PIR.")
@@ -148,7 +168,7 @@ count_excluded_participants <- function(list_dataset
   print(nrow(df_merge8))
   
   df_merge9 <- df_merge8 %>% filter(!is.na(URXUCR))
-  print("Total number of subjects who don't have  urine creatine measurementws")
+  print("Total number of subjects who don't have urinary creatinine measurementws")
   num_no_creatine = nrow(df_merge8) - nrow(df_merge9)
   print(num_no_creatine)
   print("Total Number of people in final dataset")
@@ -166,7 +186,15 @@ count_excluded_participants <- function(list_dataset
   print("Final Number after adding ALL NHANES Women category")
   print(nrow(df_merged10))
   
-  all_row_counts = c(number_with_survey,num_no_weight_feeling,number_underweight,number_male,num_no_BP3,num_no_sunscreen,num_no_PIR,num_no_BMI,num_no_creatine)
+  all_row_counts = c(number_with_survey
+                     , num_no_weight_feeling
+                     , number_underweight
+                     , number_male
+                     , num_no_BP3
+                     , num_no_sunscreen
+                     , num_no_PIR
+                     , num_no_BMI
+                     , num_no_creatine)
   
   names(all_row_counts) = c("number_with_survey","no_weigth_feeling","number_underweight","number_male","number_no_BP3","number_no_sunscreen","number_no_PIR","number_no_BMI","number_no_urine_creatine")
   return(all_row_counts)

@@ -13,6 +13,7 @@ create_table_population_statistics <- function(df_nhanes
            , "SDDSRVYR"
            , categorical_variables) %>%
     na.omit(.)
+  print(dim(df_nhanes))
   
   print(df_nhanes$SDDSRVYR %>% unique(.))
   
@@ -82,7 +83,6 @@ create_table_population_statistics <- function(df_nhanes
     name_table <- "table_1_youth.png"
   }  
   print(df_stats)
-  
   
   gtsave(data = as_gt(df_stats)
          , filename = name_table
