@@ -88,6 +88,11 @@ count_excluded_participants <- function(list_dataset
     df_merged1 <- df_merged1
   }
     
+  if(is_adult == TRUE) {
+    df_merged1 = df_merged1[df_merged1$RIDAGEYR >=16,]
+  } else {
+    df_merged1 = df_merged1[df_merged1$RIDAGEYR >= 8 & df_merged1$RIDAGEYR <=15,]
+  }
     
   print("Number of people with survey information. This is where we start")
   number_with_survey = nrow(df_merged1)
@@ -186,7 +191,8 @@ count_excluded_participants <- function(list_dataset
   print("Final Number after adding ALL NHANES Women category")
   print(nrow(df_merged10))
   
-  all_row_counts = c(number_with_survey
+  if(is_adult==TRUE) {
+    all_row_counts = c(number_with_survey
                      , num_no_weight_feeling
                      , number_underweight
                      , number_male
@@ -195,7 +201,18 @@ count_excluded_participants <- function(list_dataset
                      , num_no_PIR
                      , num_no_BMI
                      , num_no_creatine)
-  
-  names(all_row_counts) = c("number_with_survey","no_weigth_feeling","number_underweight","number_male","number_no_BP3","number_no_sunscreen","number_no_PIR","number_no_BMI","number_no_urine_creatine")
+    names(all_row_counts) = c("number_with_survey","no_weigth_feeling","number_underweight","number_male","number_no_BP3","number_no_sunscreen","number_no_PIR","number_no_BMI","number_no_urine_creatine")
+  } else {
+    all_row_counts = c(number_with_survey
+                       , num_no_weight_feeling
+                       , number_underweight
+                       , number_male
+                       , num_no_BP3
+                       , num_no_PIR
+                       , num_no_BMI
+                       , num_no_creatine)
+    names(all_row_counts) = c("number_with_survey","no_weigth_feeling","number_underweight","number_male","number_no_BP3","number_no_PIR","number_no_BMI","number_no_urine_creatine")
+    
+  }
   return(all_row_counts)
 }
