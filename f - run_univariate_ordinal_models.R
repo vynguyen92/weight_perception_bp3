@@ -4,6 +4,9 @@ run_univariate_ordinal_models <- function(df_nhanes
                                           , by_group)
 {
   library(MASS)
+  library(tidyverse)
+  library(broom)
+  library(xlsx)
   
   levels_sunscreen_usage_cat <- rev(levels(df_nhanes$sunscreen_usage_cat)) 
   # print(levels_sunscreen_usage_cat)
@@ -53,8 +56,6 @@ run_univariate_ordinal_models <- function(df_nhanes
       # print(model_i)
       
       # print(tidy(model_i))
-      
-  
       
       coeff_table <- coef(summary(model_i))
       
@@ -116,12 +117,69 @@ run_univariate_ordinal_models <- function(df_nhanes
     
   }
   
-  
   list_regressions <- list()
   
-  list_regressions[["tidy"]] <- df_tidy
+  list_regressions[["tidy"]] <- df_tidy %>%
+    mutate(readable_term = gsub("race_weight_perception_|race"
+                                , ""
+                                , term) %>%
+             gsub("_about"
+                  , " perceived about"
+                  , .) %>%
+             gsub("_overweight"
+                  , " perceived overweight"
+                  , .) %>%
+             gsub("INDFMPIR"
+                  , "Poverty income ratio"
+                  , .) %>%
+             gsub("RIDAGEYR"
+                  , "Age"
+                  , .) %>%
+             gsub("weight_perception perceived overweight"
+                  , "Perceived overweight vs. perceived at right weight"
+                  , .) %>%
+             gsub("_always\\|_most of the time"
+                  , "always vs. (most of the time, sometimes, rarely, and never)"
+                  , .) %>%
+             gsub("_most of the time\\|_sometimes"
+                  , "most of the time vs. (sometimes, rarely, and never)"
+                  , .) %>%
+             gsub("_sometimes\\|_rarely"
+                  , "sometimes vs. (rarely and never)"
+                  , .) %>%
+             gsub("_rarely\\|_never"
+                  , "rarely vs. (never)"
+                  , .) 
+             ) %>%
+    mutate(readable_term = ifelse(grepl("race", term) == TRUE
+                                  , paste(readable_term
+                                          , " vs. non-Hispanic Black"
+                                          , sep = "")
+                                  , readable_term)) %>%
+    relocate(readable_term
+             , .after = "term")
+  # View(list_regressions[["tidy"]])
   
   list_regressions[["glance"]] <- df_glance
+  
+  file_name <- paste("ordinal_logistic_sunscreen_"
+                     , ifelse(by_group == TRUE
+                              , "stratified_by_race_"
+                              , "")
+                     , paste(predictor
+                             , collapse = "_")
+                     , ".xlsx"
+                     , sep = "")
+  # print(file_name)
+  
+  write.xlsx(x = list_regressions[["tidy"]]
+             , file = file_name
+             , sheetName = "tidy")
+
+  write.xlsx(x =  list_regressions[["glance"]]
+             , file = file_name
+             , sheetName = "glance"
+             , append = TRUE)
   
   return(list_regressions)
   

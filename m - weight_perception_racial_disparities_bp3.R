@@ -111,13 +111,27 @@ list_polyr_sunscreen_PIR_race <- run_univariate_ordinal_models(df_nhanes = df_me
                                                           , predictor = c("race", "INDFMPIR")
                                                           , by_group = FALSE)
 
-list_polyr_sunscreen_PIR_race <- run_univariate_ordinal_models(df_nhanes = df_merge
-                                                               , outcome = "sunscreen_usage_cat"
-                                                               , predictor = c("race_weight_perception"
-                                                                               , "INDFMPIR"
-                                                                               , "RIDAGEYR"
-                                                                               , "BMXBMI")
-                                                               , by_group = FALSE)
+list_polyr_sunscreen_race_weight_perception_fully <- run_univariate_ordinal_models(df_nhanes = df_merge
+                                                            , outcome = "sunscreen_usage_cat"
+                                                            , predictor = c("race_weight_perception"
+                                                                            , "INDFMPIR"
+                                                                            , "RIDAGEYR")
+                                                            , by_group = FALSE)
+
+list_polyr_sunscreen_race_fully <- run_univariate_ordinal_models(df_nhanes = df_merge
+                                                            , outcome = "sunscreen_usage_cat"
+                                                            , predictor = c("weight_perception"
+                                                                            , "race"
+                                                                            , "INDFMPIR"
+                                                                            , "RIDAGEYR")
+                                                            , by_group = FALSE)
+
+list_polyr_sunscreen_stratified_by_race <- run_univariate_ordinal_models(df_nhanes = df_merge
+                                                                        , outcome = "sunscreen_usage_cat"
+                                                                        , predictor = c("weight_perception"
+                                                                                        , "INDFMPIR"
+                                                                                        , "RIDAGEYR")
+                                                                        , by_group = TRUE)
 
 list_lm_sunscreen_weight_perception <- run_univariate_lm_models(df_nhanes = df_merge
                                                                 , outcome = "sunscreen_usage_ordinal"
