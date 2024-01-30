@@ -63,7 +63,8 @@ continuous_variables <- c("RIDAGEYR"
                           , "BMXBMI"
                           , "INDFMPIR"
                           , "URXBP3"
-                          , "WT_URXBP3")
+                          , "WT_URXBP3"
+                          , "WTINT2YR")
 
 categorical_variables <- c("weight_perception"
                            , "sunscreen_usage_cat")
@@ -109,6 +110,14 @@ list_polyr_sunscreen_PIR_race <- run_univariate_ordinal_models(df_nhanes = df_me
                                                           , outcome = "sunscreen_usage_cat"
                                                           , predictor = c("race", "INDFMPIR")
                                                           , by_group = FALSE)
+
+list_polyr_sunscreen_PIR_race <- run_univariate_ordinal_models(df_nhanes = df_merge
+                                                               , outcome = "sunscreen_usage_cat"
+                                                               , predictor = c("race_weight_perception"
+                                                                               , "INDFMPIR"
+                                                                               , "RIDAGEYR"
+                                                                               , "BMXBMI")
+                                                               , by_group = FALSE)
 
 list_lm_sunscreen_weight_perception <- run_univariate_lm_models(df_nhanes = df_merge
                                                                 , outcome = "sunscreen_usage_ordinal"
