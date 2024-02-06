@@ -76,7 +76,7 @@ run_univariate_ordinal_models <- function(df_nhanes
     
     df_tidy <- list_regression_tidy %>%
       reduce(.
-             , full_join)
+             , full_join) 
     
     df_glance <- list_regression_glance %>%
       reduce(.
@@ -120,6 +120,7 @@ run_univariate_ordinal_models <- function(df_nhanes
   list_regressions <- list()
   
   list_regressions[["tidy"]] <- df_tidy %>%
+    mutate(estimate = -estimate) %>%
     mutate(readable_term = gsub("race_weight_perception_|race"
                                 , ""
                                 , term) %>%
