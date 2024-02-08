@@ -291,7 +291,7 @@ panel_boxplot_chemical_race_weight_perception(df_adults = df_merge
                                               , current_directory = working_directory)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Arrow forest plots  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Arrow divergence plots  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
@@ -339,3 +339,14 @@ alphabet_soup_rsq(regression_stratified = list_regression_stats_stratified
                   , name_of_folder = "Alphabet Soup Plot - Contribution of sunscreen for BP3"
                   , current_directory = working_directory
                   , is_adult = TRUE)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Forest plots  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
+forest_plots_same_ref(list_all = list_regression_stats
+                      , list_ref = list_perception_vs_all_blacks
+                      , name_of_folder = "Forest Plot Same Reference - Differences by race and weight perception"
+                      , current_directory = working_directory
+                      , is_adult = TRUE)
