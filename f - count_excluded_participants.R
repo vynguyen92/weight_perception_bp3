@@ -7,6 +7,8 @@ count_excluded_participants <- function(list_dataset
   
   # print(names(list_dataset))
   
+  df_merged0 <- list_dataset[["demographics"]]
+  
   df_merged1 <- list_dataset[["self_reported_weight"]] %>%
     select(SEQN
            , all_of(weight_perception)) 
@@ -94,16 +96,26 @@ count_excluded_participants <- function(list_dataset
     df_merged1 = df_merged1[df_merged1$RIDAGEYR >= 8 & df_merged1$RIDAGEYR <=15,]
   }
     
-  print("Number of people with survey information. This is where we start")
+  print("Total and maximum number of participants in NHANES 1988-2018.")
+  max_number = nrow(df_merged0)
+  print(max_number)
+  
+  print("Number of people with data on weight history.")
   number_with_survey = nrow(df_merged1)
   print(number_with_survey)
   
   df_merged2 <- df_merged1 %>% filter(is.na(weight_perception) == FALSE)
+  print("Number of people with data on weight perception")
+  print(nrow(df_merged2))
+  num_no_weight_history = nrow(df_merged0)-nrow(df_merged2)
+  print("Number of people with no data on weight perception.")
+  print(num_no_weight_history)
+  
+ 
   print("Number of people with who did not answer how they feel about weight")
   num_no_weight_feeling = nrow(df_merged1)-nrow(df_merged2)
   print(num_no_weight_feeling)
-  print("Number of people with survey and weight info")
-  print(nrow(df_merged2))
+
   df_merged3 <- df_merged2 %>%
     mutate(race = case_when(RIDRETH1 == 1 ~ "Mexican American"
                             , RIDRETH1 == 2 ~ "Other Hispanic"
@@ -178,6 +190,9 @@ count_excluded_participants <- function(list_dataset
   print(num_no_creatine)
   print("Total Number of people in final dataset")
   print(nrow(df_merge9))
+  
+  print("Range of ages")
+  print(range(df_merge9$RIDAGEYR))
   
   df_merged10 <- df_merge9 %>%
     full_join(.
