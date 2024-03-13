@@ -10,7 +10,7 @@ create_table_population_statistics <- function(df_nhanes
   
   df_nhanes <- df_nhanes %>%
     filter(SDDSRVYR != -1) %>%
-    select(race
+    dplyr::select(race
            , continuous_variables
            , SDDSRVYR
            , SDMVPSU
@@ -19,6 +19,7 @@ create_table_population_statistics <- function(df_nhanes
     na.omit(.)
   print(dim(df_nhanes))
   
+  print(range(df_nhanes$RIDAGEYR))
   # subset_stratum_psu <- df_nhanes %>%
   #   filter(race != "All NHANES Women") %>%
   #   select(SDMVPSU
