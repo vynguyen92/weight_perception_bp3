@@ -1,7 +1,18 @@
 conduct_chi_square_test <- function(df_nhanes
+                                    , variables_for_subset
                                     , variable_1
                                     , variable_2)
 {
+  library(tidyverse)
+  library(broom)
+  
+  df_nhanes <- df_nhanes %>%
+    select("SEQN"
+           , "race"
+           , all_of(variables_for_subset)) %>%
+    na.omit(.)
+  print(dim(df_nhanes))
+  
   races <- df_nhanes$race %>% unique(.)
   
   num_groups <- length(races)
