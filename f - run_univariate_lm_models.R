@@ -1,9 +1,17 @@
 run_univariate_lm_models <- function(df_nhanes
                                      , outcome
                                      , predictor
+                                     , variables_for_subset
                                      , by_group)
 {
   num_predictors <- length(predictor)
+  
+  df_nhanes <- df_nhanes %>%
+    select("SEQN"
+           , "race"
+           , all_of(variables_for_subset)) %>%
+    na.omit(.)
+  print(dim(df_nhanes))
   
   if(num_predictors == 1)
   {
