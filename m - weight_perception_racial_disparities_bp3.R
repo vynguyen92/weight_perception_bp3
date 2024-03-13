@@ -77,6 +77,24 @@ df_population_stats_youth <- create_table_population_statistics(df_nhanes = df_m
                                                                 , continuous_variables = continuous_variables
                                                                 , categorical_variables = "weight_perception"
                                                                 , boolean_adult = FALSE)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~  Chi-Square Tests & Regression on BMI and Weight Perception  ~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+list_chi_square_bmi_weight_perception <- conduct_chi_square_test(df_nhanes = df_merge
+                                                                 , variables_for_subset = c(continuous_variables
+                                                                                            , categorical_variables)
+                                                                 , variable_1 = "BMXBMI"
+                                                                 , variable_2 = "weight_perception")
+
+list_lm_sunscreen_bmi_weight_perception <- run_univariate_lm_models(df_nhanes = df_merge
+                                                                , outcome = "BMXBMI"
+                                                                , predictor = c("weight_perception"
+                                                                                , "INDFMPIR"
+                                                                                , "RIDAGEYR")
+                                                                , variables_for_subset = c(continuous_variables
+                                                                                           , categorical_variables)
+                                                                , by_group = TRUE)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~  Chi-Square Tests & Regression on Sunscreen Usage and Weight Perception  ~~~~~~~~~~~~~~~#
