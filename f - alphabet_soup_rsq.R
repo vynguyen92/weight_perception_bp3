@@ -244,8 +244,8 @@ alphabet_soup_rsq <- function(regression_stratified
                                     , 52
                                     , 50
                                     , 53
-                                    , 51
-                                    , 54)) +
+                                    , 55
+                                    , 56)) +
       xlab("Coefficient of Determination, R2") +
       xlim(0,0.5) +
       guides(shape = guide_legend(title = "Regression Models")
