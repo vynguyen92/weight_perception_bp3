@@ -6,6 +6,7 @@ run_regression_models <- function(df_nhanes
   library(broom)
   library(survey)
   library(tidyverse)
+  library(xlsx)
   
   df_nhanes_same_size <- df_nhanes %>%
     select(race
@@ -306,10 +307,19 @@ run_regression_models <- function(df_nhanes
                              , ""
                              , regression_formula))
   
+  write.xlsx(x = list_regression[["tidy"]]
+             , file = "regressions_all_nhanes_women.xlsx"
+             , sheetName = "tidy")
+  
   list_regression[["glance"]] <- df_glance %>%
     mutate(covariates = gsub("log10\\(URXBP3\\) \\~ race_weight_perception \\+ |log10\\(URXBP3\\) \\~ race (\\+ |\\+ weight_perception \\+ )"
                              , ""
                              , regression_formula))
+  
+  write.xlsx(x = list_regression[["glance"]]
+             , file = "regressions_all_nhanes_women.xlsx"
+             , sheetName = "glance"
+             , append = TRUE)
   
   return(list_regression)
 }
