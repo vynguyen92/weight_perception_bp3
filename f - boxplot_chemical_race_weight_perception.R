@@ -32,6 +32,7 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
            , chemical
            , "SDMVPSU"
            , "SDMVSTRA"
+           , "WT_URXBP3"
            , covariates) %>%
     na.omit(.) %>%
     # filter(race != "All NHANES Women") %>%
@@ -52,6 +53,7 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
                                                    , "_about the right weight")))
   
   # print(dim(df_nhanes_same_size))
+  
   
   chemical_name <- df_dictionary %>%
     filter(variable_codename_use == chemical) %>%
