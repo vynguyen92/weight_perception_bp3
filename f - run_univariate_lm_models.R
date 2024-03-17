@@ -95,11 +95,29 @@ run_univariate_lm_models <- function(df_nhanes
     
   }
   
+  file_name <- paste("linear_models_bmi_"
+                     , ifelse(by_group == TRUE
+                              , "stratified_by_race_"
+                              , "")
+                     , paste(predictor
+                             , collapse = "_")
+                     , ".xlsx"
+                     , sep = "")
+  
   list_regressions <- list()
   
   list_regressions[["tidy"]] <- df_tidy
   
   list_regressions[["glance"]] <- df_glance
+  
+  write.xlsx(x = list_regressions[["tidy"]]
+             , file = file_name
+             , sheetName = "tidy")
+  
+  write.xlsx(x =  list_regressions[["glance"]]
+             , file = file_name
+             , sheetName = "glance"
+             , append = TRUE)
   
   return(list_regressions)
 }
