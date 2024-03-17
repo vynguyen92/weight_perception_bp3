@@ -298,10 +298,19 @@ run_perception_vs_all_models <- function(df_nhanes
                              , ""
                              , regression_formula))
   
+  write.xlsx(x = list_regression[["tidy"]]
+             , file = "regressions_non_hispanic_black_women.xlsx"
+             , sheetName = "tidy")
+  
   list_regression[["glance"]] <- df_glance %>%
     mutate(covariates = gsub("log10\\(URXBP3\\) \\~ weight_perception \\+ |log10\\(URXBP3\\) \\~ race (\\+ |\\+ weight_perception \\+ )"
                              , ""
                              , regression_formula))
+  
+  write.xlsx(x = list_regression[["glance"]]
+             , file = "regressions_non_hispanic_black_women.xlsx"
+             , sheetName = "glance"
+             , append = TRUE)
   
   return(list_regression)
   
