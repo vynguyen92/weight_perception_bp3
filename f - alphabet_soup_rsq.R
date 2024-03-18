@@ -84,6 +84,8 @@ alphabet_soup_rsq <- function(regression_stratified
 
   num_combinations <- nrow(df_combination)
 
+  list_wide_regressions <- list()
+  
   for(i in seq(num_combinations))
   {
     subset_combination <- df_combination[i,]
@@ -294,9 +296,19 @@ alphabet_soup_rsq <- function(regression_stratified
            , height = 9
            , units = "in")
 
+    list_wide_regressions[[combination_i]] <- subset_sunscreen_wide
+    
   }
 
+  df_wide_regression <- list_wide_regressions %>%
+    reduce(.
+           , full_join)
+  View(df_wide_regression)
+  
   # Set the directory to the folder containing the function and main scripts
   setwd(current_directory)
+  
+  
+  
   alphabet_soup_plot
 }
