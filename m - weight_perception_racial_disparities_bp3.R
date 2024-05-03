@@ -87,7 +87,7 @@ list_chi_square_bmi_weight_perception <- conduct_chi_square_test(df_nhanes = df_
                                                                  , variable_1 = "BMXBMI"
                                                                  , variable_2 = "weight_perception")
 
-list_lm_sunscreen_bmi_weight_perception <- run_univariate_lm_models(df_nhanes = df_merge
+list_lm_bmi_weight_perception <- run_univariate_lm_models(df_nhanes = df_merge
                                                                 , outcome = "BMXBMI"
                                                                 , predictor = c("weight_perception"
                                                                                 , "INDFMPIR"
