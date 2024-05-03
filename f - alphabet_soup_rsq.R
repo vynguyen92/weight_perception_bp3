@@ -303,12 +303,14 @@ alphabet_soup_rsq <- function(regression_stratified
   df_wide_regression <- list_wide_regressions %>%
     reduce(.
            , full_join)
-  View(df_wide_regression)
+  # View(df_wide_regression)
   
   # Set the directory to the folder containing the function and main scripts
   setwd(current_directory)
   
-  
+  write.xlsx(x = df_wide_regression
+             , file = "r2_without_vs_with_sunscreen_adjustment.xlsx"
+             , sheetName = "tidy")
   
   alphabet_soup_plot
 }
