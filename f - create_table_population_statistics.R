@@ -7,6 +7,7 @@ create_table_population_statistics <- function(df_nhanes
   library(tidyverse)
   library(gtsummary)
   library(gt)
+  library(survey)
   
   df_nhanes <- df_nhanes %>%
     filter(SDDSRVYR != -1) %>%
@@ -18,6 +19,13 @@ create_table_population_statistics <- function(df_nhanes
            , categorical_variables) %>%
     na.omit(.)
   print(dim(df_nhanes))
+  
+  num_cycles <- df_nhanes$SDDSRVYR %>%
+    unique(.) %>%
+    length(.)
+  
+  df_nhanes <- df_nhanes %>%
+    mutate(adjusted_weights = WT_URXBP3/num_cycles)
   
   print(range(df_nhanes$RIDAGEYR))
   # subset_stratum_psu <- df_nhanes %>%
@@ -38,6 +46,10 @@ create_table_population_statistics <- function(df_nhanes
   
   df_nhanes <- df_nhanes %>%
     select(race
+           , WT_URXBP3
+           , SDMVPSU
+           , SDMVSTRA
+           , adjusted_weights
            , all_of(continuous_variables)
            , all_of(categorical_variables)) 
 
@@ -64,22 +76,39 @@ create_table_population_statistics <- function(df_nhanes
                                    , "sometimes"
                                    , "rarely"
                                    , "never"))) %>%
-      tbl_summary(by = race
-                  , label = list(RIDAGEYR ~ "Age (years)"
-                                 , URXUCR ~ "Urinary creatinine (mg/dL)"
-                                 , BMXBMI ~ "Body Mass Index (kg/m**2)"
-                                 , INDFMPIR ~ "Poverty income ratio (-)"
-                                 , URXBP3 ~ "Urinary Benzophenone-3 (ng/mL)"
-                                 , weight_perception ~ "Weight perception"
-                                 , sunscreen_usage_cat ~ "Sunscreen usage")
-                  , statistic = list(all_continuous() ~ "{mean} ({sd})")
-                  , digits = list(RIDAGEYR ~ c(1, 1)
-                                  , URXUCR ~ c(1, 1)
-                                  , BMXBMI ~ c(1, 1)
-                                  , INDFMPIR ~ c(2, 2)
-                                  , URXBP3 ~ c(1, 1)))
+      svydesign(strata = ~SDMVSTRA
+                , id = ~SDMVPSU
+                , weights = ~adjusted_weights
+                , data = .
+                , nest = TRUE) %>% 
+      tbl_svysummary(data = .
+                     , by = race
+                     , include = c(RIDAGEYR
+                                   , URXUCR
+                                   , BMXBMI
+                                   , INDFMPIR
+                                   , URXBP3
+                                   , weight_perception
+                                   , sunscreen_usage_cat)
+                     , label = list(RIDAGEYR ~ "Age (years)"
+                                    , URXUCR ~ "Urinary creatinine (mg/dL)"
+                                    , BMXBMI ~ "Body Mass Index (kg/m**2)"
+                                    , INDFMPIR ~ "Poverty income ratio (-)"
+                                    , URXBP3 ~ "Urinary Benzophenone-3 (ng/mL)"
+                                    , weight_perception ~ "Weight perception"
+                                    , sunscreen_usage_cat ~ "Sunscreen usage")
+                     , statistic = list(all_continuous() ~ "{mean}\n({sd})"
+                                        , weight_perception ~ "{n_unweighted}\n({p}%)"
+                                        , sunscreen_usage_cat ~ "{n_unweighted}\n({p}%)")
+                     , digits = list(RIDAGEYR ~ c(1, 1)
+                                     , URXUCR ~ c(1, 1)
+                                     , BMXBMI ~ c(1, 1)
+                                     , INDFMPIR ~ c(2, 2)
+                                     , URXBP3 ~ c(1, 1))) %>%
+      modify_header(update = list(all_stat_cols(FALSE) ~ "**{level}**<br>N = {n_unweighted}")
+                    , label = "**Characteristics**")
 
-    name_table <- "table_1_adults.png"
+    name_table <- "table_1_adults_weighted.png"
 
   } else {
 
@@ -98,8 +127,13 @@ create_table_population_statistics <- function(df_nhanes
       mutate(weight_perception = gsub("_"
                                       , "perceived "
                                       , weight_perception)) %>%
-      tbl_summary(by = race
-                  , label = list(RIDAGEYR ~ "Age (years)"
+      svydesign(strata = ~SDMVSTRA
+                , id = ~SDMVPSU
+                , weights = ~adjusted_weights
+                , data = .
+                , nest = TRUE) %>% 
+      tbl_svysummary(by = race
+                     , label = list(RIDAGEYR ~ "Age (years)"
                                  , URXUCR ~ "Urinary creatinine (mg/dL)"
                                  , BMXBMI ~ "Body Mass Index (kg/m**2)"
                                  , INDFMPIR ~ "Poverty income ratio (-)"
@@ -115,7 +149,7 @@ create_table_population_statistics <- function(df_nhanes
 
                   )
 
-    name_table <- "table_1_youth.png"
+    name_table <- "table_1_youth_weighted.png"
   }
   print(df_stats)
 
