@@ -82,7 +82,7 @@ arrow_forest_plot_same_ref <- function(list_all
 
   num_combinations <- nrow(df_combination)
 
-  for(i in seq(num_combinations)[14])
+  for(i in seq(num_combinations))
   {
     subset_combination <- df_combination[i,]
     # print(subset_combination)
@@ -227,7 +227,7 @@ arrow_forest_plot_same_ref <- function(list_all
                          , fold_diff) %>%
                   rename("fold_diff_start" = fold_diff)
                 , by = "race")
-    View(subset_regression_overweight)
+    # View(subset_regression_overweight)
 
     arrow_forest_plot <- ggplot(subset_regression_all) +
       geom_segment(data = subset_regression_right_weight
@@ -337,5 +337,5 @@ arrow_forest_plot_same_ref <- function(list_all
 
   # Set the directory to the folder containing the function and main scripts
   setwd(current_directory)
-  final_plot
+  # final_plot
 }
