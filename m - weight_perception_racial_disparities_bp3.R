@@ -369,7 +369,8 @@ forest_plots_same_ref(list_all = list_regression_stats
                       , current_directory = working_directory
                       , is_adult = TRUE)
 
+setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
 forest_plot_stratified_race(list_all = list_regression_stats_stratified
-                            , name_of_folder = "Forest Plot Same Reference - Differences by race and weight perception"
+                            , name_of_folder = "Forest Plot Stratified - Differences by weight perception"
                             , current_directory = working_directory
                             , is_adult = TRUE)
