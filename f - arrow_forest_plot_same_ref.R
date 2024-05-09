@@ -211,16 +211,29 @@ arrow_forest_plot_same_ref <- function(list_all
     # print(subset_regression_all)
 
     subset_regression_right_weight <- subset_regression %>%
-      filter(weight_perception == "about the right weight")
+      filter(weight_perception == "about the right weight") %>%
+      left_join(.
+                , subset_regression_all %>%
+                  select(race
+                         , fold_diff) %>%
+                  rename("fold_diff_start" = fold_diff)
+                , by = "race")
 
     subset_regression_overweight <- subset_regression %>%
-      filter(weight_perception == "overweight")
+      filter(weight_perception == "overweight") %>%
+      left_join(.
+                , subset_regression_all %>%
+                  select(race
+                         , fold_diff) %>%
+                  rename("fold_diff_start" = fold_diff)
+                , by = "race")
+    View(subset_regression_overweight)
 
     arrow_forest_plot <- ggplot(subset_regression_all) +
       geom_segment(data = subset_regression_right_weight
                    , mapping = aes(x = race
                                    , xend = race
-                                   , y = subset_regression_all$fold_diff
+                                   , y = fold_diff_start
                                    , yend = fold_diff)
                    , arrow = arrow(length = unit(0.2, "inches"))
                    , size = 2
@@ -229,7 +242,7 @@ arrow_forest_plot_same_ref <- function(list_all
       geom_segment(data = subset_regression_overweight
                    , mapping = aes(x = race
                                    , xend = race
-                                   , y = subset_regression_all$fold_diff
+                                   , y = fold_diff_start
                                    , yend = fold_diff)
                    , arrow = arrow(length = unit(0.2, "inches"))
                    , size = 2
@@ -307,21 +320,22 @@ arrow_forest_plot_same_ref <- function(list_all
                            , ".pdf"
                            , sep = "")
 
-    # Save the panel of plots as a png and pdf
-    print(plot_name.png)
-    ggsave(filename = plot_name.png
-           , plot = final_plot
-           , width = 15
-           , height = 9
-           , units = "in")
-    print(plot_name.pdf)
-    ggsave(filename = plot_name.pdf
-           , plot = final_plot
-           , width = 15
-           , height = 9
-           , units = "in")
+    # # Save the panel of plots as a png and pdf
+    # print(plot_name.png)
+    # ggsave(filename = plot_name.png
+    #        , plot = final_plot
+    #        , width = 15
+    #        , height = 9
+    #        , units = "in")
+    # print(plot_name.pdf)
+    # ggsave(filename = plot_name.pdf
+    #        , plot = final_plot
+    #        , width = 15
+    #        , height = 9
+    #        , units = "in")
   }
 
   # Set the directory to the folder containing the function and main scripts
   setwd(current_directory)
+  final_plot
 }

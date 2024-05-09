@@ -88,7 +88,7 @@ forest_plot_stratified_race <- function(list_all
                                   , ymax = fold_diff_ci_high)
                     , width = .2) +
       geom_hline(yintercept = 1) +
-      labs(y = "Fold Difference of BP3 between Women with vs. without Body Dissatisfaction") +
+      labs(y = "Fold Difference of BP3 between perceived as overweight vs. at the right weight") +
       theme(axis.title.x = element_blank()
             , axis.text = element_text(size = 12)
             , axis.title.y = element_text(size = 16))

@@ -183,7 +183,9 @@ vector_regression_models <- c("log10(URXBP3) ~ race + RIDAGEYR + SDDSRVYR + URXU
                               , "log10(URXBP3) ~ race + weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + sunscreen_usage_ordinal"
                               , "log10(URXBP3) ~ race_weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + sunscreen_usage_ordinal"
                               , "log10(URXBP3) ~ race + weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + sunscreen_usage_ordinal"
-                              , "log10(URXBP3) ~ race_weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + sunscreen_usage_ordinal")
+                              , "log10(URXBP3) ~ race_weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + sunscreen_usage_ordinal"
+                              , "log10(URXBP3) ~ race + weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + INDFMPIR + sunscreen_usage_ordinal"
+                              , "log10(URXBP3) ~ race_weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + INDFMPIR + sunscreen_usage_ordinal")
 
 vector_regression_models_youth <- c("log10(URXBP3) ~ race + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI"
                                     , "log10(URXBP3) ~ race + weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI"
@@ -228,7 +230,8 @@ list_regression_stats_youth <- run_regression_models(df_nhanes = df_merge_youth
 vector_stratified_models <- c("log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI"
                               , "log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR"
                               , "log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + sunscreen_usage_ordinal"
-                              , "log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + sunscreen_usage_ordinal")
+                              , "log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + sunscreen_usage_ordinal"
+                              , "log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + INDFMPIR + sunscreen_usage_ordinal")
 
 vector_stratified_models_youth <- c("log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI"
                                     , "log10(URXBP3) ~ weight_perception + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR")
