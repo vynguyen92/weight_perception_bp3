@@ -320,19 +320,19 @@ arrow_forest_plot_same_ref <- function(list_all
                            , ".pdf"
                            , sep = "")
 
-    # # Save the panel of plots as a png and pdf
-    # print(plot_name.png)
-    # ggsave(filename = plot_name.png
-    #        , plot = final_plot
-    #        , width = 15
-    #        , height = 9
-    #        , units = "in")
-    # print(plot_name.pdf)
-    # ggsave(filename = plot_name.pdf
-    #        , plot = final_plot
-    #        , width = 15
-    #        , height = 9
-    #        , units = "in")
+    # Save the panel of plots as a png and pdf
+    print(plot_name.png)
+    ggsave(filename = plot_name.png
+           , plot = final_plot
+           , width = 15
+           , height = 9
+           , units = "in")
+    print(plot_name.pdf)
+    ggsave(filename = plot_name.pdf
+           , plot = final_plot
+           , width = 15
+           , height = 9
+           , units = "in")
   }
 
   # Set the directory to the folder containing the function and main scripts
