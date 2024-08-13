@@ -69,7 +69,7 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
                  , geom = "point"
                  , shape = 24
                  , size = 4
-                 , fill = "gray") +
+                 , fill = "brown") +
     scale_y_log10() +
     labs(y = chemical_name) +
     theme(legend.position = "top"
@@ -117,7 +117,7 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
                  , geom = "point"
                  , shape = 24
                  , size = 4
-                 , fill = "gray"
+                 , fill = "brown"
     ) +
     facet_grid(cols = vars(race)) +
     geom_text(data = df_nhanes_same_size
