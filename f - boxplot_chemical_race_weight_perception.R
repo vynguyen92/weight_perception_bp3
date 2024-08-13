@@ -196,7 +196,7 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
                  , geom = "point"
                  , shape = 24
                  , size = 4
-                 , fill = "gray") +
+                 , fill = "brown") +
     # geom_signif(comparisons = list(c("_overweight"
     #                                  , "_about the right weight")), 
     #             map_signif_level = TRUE) +
@@ -263,7 +263,7 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
                  , geom = "point"
                  , shape = 24
                  , size = 4
-                 , fill = "gray") +
+                 , fill = "brown") +
     geom_text(data = df_nhanes_max_size
               , mapping = aes(x = 1.5
                               , y = max(df_nhanes_max_size[,chemical]) + 10000
