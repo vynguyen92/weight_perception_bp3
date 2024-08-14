@@ -71,7 +71,25 @@ forest_plot_stratified_race <- function(list_all
       filter(account_sampling_design == type_sampling_design_i) %>%
       filter(type_sample_size == type_sample_size_i) %>%
       filter(covariates == covariates_i) %>%
-      arrange(fold_diff)
+      arrange(fold_diff) %>%
+      mutate(label_ci = paste(fold_diff %>%
+                                round(.
+                                      , digits = 3)
+                              , " ["
+                              , fold_diff_ci_low %>%
+                                round(.
+                                      , digits = 3)
+                              , ", "
+                              , fold_diff_ci_high%>%
+                                round(.
+                                      , digits = 3)
+                              , "]"
+                              , "\n"
+                              , "p-value = "
+                              , p.value %>%
+                                round(.
+                                      , digits = 3)
+                              , sep = ""))
     # print(subset_regression)
     
     ordered_race_by_fold_diff <- subset_regression %>%
@@ -89,6 +107,14 @@ forest_plot_stratified_race <- function(list_all
                     , width = .2) +
       geom_hline(yintercept = 1) +
       labs(y = "Fold Difference of BP3 between perceived as overweight vs. at the right weight") +
+      geom_text(data = subset_regression
+                      , mapping = aes(x = race
+                                      , y = fold_diff_ci_high + 0.1
+                                      , label = label_ci)
+                      , size = 4
+                      # , nudge_x = -0.3
+                      # , segment.color = 'transparent'
+                      , inherit.aes = FALSE) +
       theme(axis.title.x = element_blank()
             , axis.text = element_text(size = 12)
             , axis.title.y = element_text(size = 16))
@@ -149,5 +175,5 @@ forest_plot_stratified_race <- function(list_all
   
   # Set the directory to the folder containing the function and main scripts
   setwd(current_directory)
-  # forest_plot_race
+  forest_plot_race
 }
