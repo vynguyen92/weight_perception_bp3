@@ -6,6 +6,7 @@ run_stratified_regression_models <- function(df_nhanes
   library(broom)
   library(survey)
   library(tidyverse)
+  library(xlsx)
   
   df_nhanes_same_size <- df_nhanes %>%
     select(race
@@ -137,8 +138,17 @@ run_stratified_regression_models <- function(df_nhanes
   list_regression <- list()
 
   list_regression[["tidy"]] <- df_tidy 
+  
+  write.xlsx(x = list_regression[["tidy"]]
+             , file = "regressions_race_stratified.xlsx"
+             , sheetName = "tidy")
 
   list_regression[["glance"]] <- df_glance
+  
+  write.xlsx(x = list_regression[["glance"]]
+             , file = "regressions_race_stratified.xlsx"
+             , sheetName = "glance"
+             , append = TRUE)
 
   return(list_regression)
   
