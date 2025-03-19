@@ -5,6 +5,7 @@ alphabet_soup_rsq <- function(regression_stratified
                               , is_adult = TRUE)
 {
   library(tidyverse)
+  library(xlsx)
   
   # Determine all file names in the current working directory
   all_files_in_current_directory <- list.files()
@@ -143,13 +144,27 @@ alphabet_soup_rsq <- function(regression_stratified
                 , subset_stats_contribution
                 , by = c("race"
                          , "race_weight_perception_together")) %>%
-      mutate(label = round(value*100, digits = 1) %>%
+      rename(value_explained_by_sunscreen = "value") %>%
+      mutate(label_explained_by_sunscreen = round(value_explained_by_sunscreen*100, digits = 1) %>%
                paste(.
                      , "%"
                      , sep = "")) %>%
       mutate(mean_rsq = (without_sunscreen_usage + with_sunscreen_usage)/2) %>%
-      arrange(value)
-    # View(subset_sunscreen_wide)
+      mutate(value_unexplained = 1 - with_sunscreen_usage) %>%
+      mutate(label_unexplained = round(value_unexplained*100, digits = 1) %>%
+               paste(.
+                     , "%"
+                     , sep = "")) %>%
+      mutate(mean_rsq_unexplained = (1 + with_sunscreen_usage)/2) %>%
+      mutate(value_others = without_sunscreen_usage) %>%
+      mutate(label_others = round(value_others*100, digits = 1) %>%
+               paste(.
+                     , "%"
+                     , sep = "")) %>%
+      mutate(mean_rsq_others = (0 + without_sunscreen_usage)/2) %>%
+      mutate(total_percentage = (value_unexplained + value_others + value_explained_by_sunscreen)/1*100) %>%
+      arrange(value_unexplained) 
+    View(subset_sunscreen_wide)
     # print(subset_sunscreen_wide)
 
     ordered_race <- subset_sunscreen_wide %>%
@@ -224,12 +239,29 @@ alphabet_soup_rsq <- function(regression_stratified
                                  )
                  , position = position_dodge(0.9)
                  , size = 5) +
+      geom_point(data = subset_stats_rsq
+                 , mapping = aes(x = rep(1, nrow(subset_stats_rsq))
+                                 , y =  race
+                                 , group = race_weight_perception_together)
+                 , shape = 124
+                 , color = "red"
+                 , position = position_dodge(0.9)
+                 , size = 5) +
+      geom_point(data = subset_stats_rsq
+                 , mapping = aes(x = rep(0, nrow(subset_stats_rsq))
+                                 , y =  race
+                                 , group = race_weight_perception_together)
+                 , shape = 124
+                 , color = "purple"
+                 , position = position_dodge(0.9)
+                 , size = 5) +
       geom_segment(data = subset_sunscreen_wide 
                    , mapping = aes(x = without_sunscreen_usage
                                    , xend = with_sunscreen_usage
                                    , y = unlist(df_positions_of_segments$position) #c(1, 2, 3, 3.75, 4.25, 5, 6, 7)
                                    , yend = unlist(df_positions_of_segments$position) #c(1, 2, 3, 3.75, 4.25, 5, 6, 7)
                                    , group = race_weight_perception_together
+                                   , color = "sunscreen"
                                    )
                    , inherit.aes = FALSE
                    ) +
@@ -237,27 +269,71 @@ alphabet_soup_rsq <- function(regression_stratified
                 , mapping = aes(y = unlist(df_positions_of_segments$position) #c(1, 2, 3, 3.75, 4.25, 5, 6, 7)
                                 , x = mean_rsq
                                 , group = race_weight_perception_together
-                                , label = label)
+                                , label = label_explained_by_sunscreen)
                 , size = 5
                 , nudge_y = 0.2
                 , inherit.aes = FALSE
                 ) +
+      geom_segment(data = subset_sunscreen_wide 
+                   , mapping = aes(x = with_sunscreen_usage
+                                   , xend = rep(1, nrow(subset_sunscreen_wide))
+                                   , y = unlist(df_positions_of_segments$position) #c(1, 2, 3, 3.75, 4.25, 5, 6, 7)
+                                   , yend = unlist(df_positions_of_segments$position) #c(1, 2, 3, 3.75, 4.25, 5, 6, 7)
+                                   , group = race_weight_perception_together
+                                   , color = "unknown"
+                   )
+                   , inherit.aes = FALSE
+      ) +
+      geom_text(data = subset_sunscreen_wide  
+                , mapping = aes(y = unlist(df_positions_of_segments$position) #c(1, 2, 3, 3.75, 4.25, 5, 6, 7)
+                                , x = mean_rsq_unexplained
+                                , group = race_weight_perception_together
+                                , label = label_unexplained)
+                , size = 5
+                , nudge_y = 0.2
+                , inherit.aes = FALSE
+                , color = "red"
+      ) +
+      geom_segment(data = subset_sunscreen_wide 
+                   , mapping = aes(x = rep(0, nrow(subset_sunscreen_wide))
+                                   , xend = without_sunscreen_usage
+                                   , y = unlist(df_positions_of_segments$position) #c(1, 2, 3, 3.75, 4.25, 5, 6, 7)
+                                   , yend = unlist(df_positions_of_segments$position) #c(1, 2, 3, 3.75, 4.25, 5, 6, 7)
+                                   , group = race_weight_perception_together
+                                   , color = "demographics and\nbody dissatisfaction"
+                   )
+                   , inherit.aes = FALSE
+      ) +
+      geom_text(data = subset_sunscreen_wide  
+                , mapping = aes(y = unlist(df_positions_of_segments$position) #c(1, 2, 3, 3.75, 4.25, 5, 6, 7)
+                                , x = mean_rsq_others
+                                , group = race_weight_perception_together
+                                , label = label_others)
+                , size = 5
+                , nudge_y = 0.2
+                , inherit.aes = FALSE
+                , color = "purple"
+      ) +
       scale_shape_manual(values = c(49
                                     , 52
                                     , 50
                                     , 53
                                     , 55
                                     , 56)) +
+      scale_color_manual(values = c("purple"
+                                    , "black"
+                                    , "red")) +
       xlab("Coefficient of Determination, R2") +
-      xlim(0,0.5) +
+      xlim(0,1) +
       guides(shape = guide_legend(title = "Regression Models")
-             , color = "none") +
+             , color = guide_legend(title = "BP3 levels explained by")
+             ) +
       theme(legend.position = "top"
             , legend.direction = "vertical"
             , axis.title.y = element_blank()
             , axis.text = element_text(size = 12)
             , axis.title.x = element_text(size = 12)
-            , legend.text = element_text(size = 12)
+            , legend.text = element_text(size = 10)
             , legend.title = element_text(size = 12))
 
     plot_name.png <- paste("alphabet_soup_plot_"

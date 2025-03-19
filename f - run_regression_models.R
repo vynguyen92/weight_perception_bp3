@@ -49,12 +49,14 @@ run_regression_models <- function(df_nhanes
       mutate(regression_formula = regression_model_i) %>%
       mutate(account_sampling_design = "unweighted") %>%
       mutate(type_sample_size = "same across models")
+    # print(df_tidy_same_sample_size_i)
 
     df_glance_same_sample_size_i <- lm_model_same_sample_size %>%
       glance(.) %>%
       mutate(regression_formula = regression_model_i) %>%
       mutate(account_sampling_design = "unweighted") %>%
       mutate(type_sample_size = "same across models")
+    # print(df_glance_same_sample_size_i)
 
     pattern_same_sample_size_i <- paste("unweighted_same_sample_size"
                                         , i
@@ -67,7 +69,7 @@ run_regression_models <- function(df_nhanes
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Weighted Models with Same Sample Size  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-    
+
     df_nhanes_same_size_svy <- df_nhanes %>%
       select(race
              , chemical
@@ -96,7 +98,7 @@ run_regression_models <- function(df_nhanes
       mutate(adjusted_weights = WT_URXBP3/num_cycles)
 
     options(survey.lonely.psu="remove")
-    
+
     nhanes_design_same_size <- svydesign(ids = ~SDMVPSU
                                          , strata = ~SDMVSTRA
                                          , weights = ~adjusted_weights
@@ -112,7 +114,7 @@ run_regression_models <- function(df_nhanes
       mutate(percent_diff = (fold_diff-1)*100) %>%
       mutate(regression_formula = regression_model_i) %>%
       mutate(account_sampling_design = "weighted") %>%
-      mutate(type_sample_size = "same across models") 
+      mutate(type_sample_size = "same across models")
     # print(df_tidy_svy_same_sample_size_i)
 
     df_glance_svy_same_sample_size_i <- svy_model_same_sample_size %>%
@@ -127,21 +129,22 @@ run_regression_models <- function(df_nhanes
              , adj.r.squared = calculate_rsq_svy(model_object = svy_model_same_sample_size
                                                  , df_nhanes = df_nhanes_same_size_svy
                                                  , svy_design = nhanes_design_same_size
-                                                 , stats = "adjusted_rsq"))
+                                                 , stats = "adjusted_rsq")
+      )
     # print(df_glance_svy_same_sample_size_i)
 
     pattern_svy_same_sample_size_i <- paste("weighted_same_sample_size"
-                                        , i
-                                        , sep = "_")
+                                            , i
+                                            , sep = "_")
 
     list_tidy[[pattern_svy_same_sample_size_i]] <- df_tidy_svy_same_sample_size_i
 
     list_glance[[pattern_svy_same_sample_size_i]] <- df_glance_svy_same_sample_size_i
-    
+
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Unweighted Models with Max Sample Size  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-    
+
     specific_covariates <- regression_model_i %>%
       gsub("log10\\(URXBP3\\) ~ "
            , ""
@@ -196,16 +199,16 @@ run_regression_models <- function(df_nhanes
     list_tidy[[pattern_max_sample_size_i]] <- df_tidy_max_sample_size_i
 
     list_glance[[pattern_max_sample_size_i]] <- df_glance_max_sample_size_i
-    
+
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Weighted Models with Max Sample Size  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-    
+
     df_svy_nhanes_dif_size <- df_nhanes %>%
       filter(race != "All NHANES Women") %>%
       select("URXBP3"
              , all_of(specific_covariates)
-             , "SDMVPSU"                
+             , "SDMVPSU"
              , "SDMVSTRA"
              , "WT_URXBP3") %>%
       na.omit(.) %>%
@@ -219,7 +222,7 @@ run_regression_models <- function(df_nhanes
                relevel(.
                        , ref = "Non-Hispanic Black"))
     # print(dim(df_svy_nhanes_dif_size))
-    
+
     num_cycles <- df_svy_nhanes_dif_size$SDDSRVYR %>%
       unique(.) %>%
       length(.)
@@ -229,7 +232,7 @@ run_regression_models <- function(df_nhanes
       mutate(adjusted_weights = WT_URXBP3/num_cycles)
 
     options(survey.lonely.psu="remove")
-    
+
     nhanes_design_dif_size <- svydesign(ids = ~SDMVPSU
                                          , strata = ~SDMVSTRA
                                          , weights = ~adjusted_weights
@@ -271,7 +274,7 @@ run_regression_models <- function(df_nhanes
 
     list_glance[[pattern_svy_dif_sample_size_i]] <- df_glance_svy_dif_sample_size_i
   }
-  
+
   df_tidy <- reduce(list_tidy
                     , full_join
                     , by = NULL) %>%
@@ -301,25 +304,25 @@ run_regression_models <- function(df_nhanes
   # View(df_regression)
 
   list_regression <- list()
-  
+
   list_regression[["tidy"]] <- df_tidy %>%
     mutate(covariates = gsub("log10\\(URXBP3\\) \\~ race_weight_perception \\+ |log10\\(URXBP3\\) \\~ race (\\+ |\\+ weight_perception \\+ )"
                              , ""
                              , regression_formula))
-  
+
   write.xlsx(x = list_regression[["tidy"]]
              , file = "regressions_all_nhanes_women.xlsx"
              , sheetName = "tidy")
-  
+
   list_regression[["glance"]] <- df_glance %>%
     mutate(covariates = gsub("log10\\(URXBP3\\) \\~ race_weight_perception \\+ |log10\\(URXBP3\\) \\~ race (\\+ |\\+ weight_perception \\+ )"
                              , ""
                              , regression_formula))
-  
+
   write.xlsx(x = list_regression[["glance"]]
              , file = "regressions_all_nhanes_women.xlsx"
              , sheetName = "glance"
              , append = TRUE)
-  
+
   return(list_regression)
 }

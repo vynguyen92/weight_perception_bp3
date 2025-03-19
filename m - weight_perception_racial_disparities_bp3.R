@@ -171,6 +171,10 @@ list_lm_sunscreen_race_weight_perception_sep <- run_univariate_lm_models(df_nhan
                                                    , predictor = c("race", "weight_perception")
                                                    , by_group = FALSE)
 
+selected_data <- df_merge %>% select(sunscreen_usage_ordinal, weight_perception)
+contingency_table <- table(selected_data$sunscreen_usage_ordinal, selected_data$weight_perception)
+chisq.test(contingency_table)
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Step-wise Regression Models  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -361,6 +365,16 @@ alphabet_soup_rsq(regression_stratified = list_regression_stats_stratified
                   , current_directory = working_directory
                   , is_adult = TRUE)
 
+alphabet_soup_bic(regression_stratified = list_regression_stats_stratified
+                  , regression_all = list_regression_stats
+                  , name_of_folder = "Alphabet Soup Plot BIC - Contribution of sunscreen for BP3"
+                  , current_directory = working_directory
+                  , df_nhanes = df_merge
+                  , covariates = vector_covariates
+                  , chemical = chemical_biomarker
+                  , intercept_model_string = "log10(URXBP3) ~ 1"
+                  , is_adult = TRUE)
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Forest plots  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -377,3 +391,21 @@ forest_plot_stratified_race(list_all = list_regression_stats_stratified
                             , name_of_folder = "Forest Plot Stratified - Differences by weight perception"
                             , current_directory = working_directory
                             , is_adult = TRUE)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Arrows Attenuation plots  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
+arrow_attenuation_plot(list_all = list_regression_stats
+                       , list_ref = list_perception_vs_all_blacks
+                       , name_of_folder = "Arrow Attenuation Plot - Differences by race and weight perception"
+                       , current_directory = working_directory
+                       , is_adult = TRUE)
+
+setwd("/Users/vynguyen/Dropbox/Mac/Documents/GitHub/weight_perception_bp3")
+arrow_attenuation_plot_stratified_race(list_all = list_regression_stats_stratified
+                                       , name_of_folder = "Arrow Attenuation Plot Stratified - Differences by race and weight perception"
+                                       , current_directory = working_directory
+                                       , is_adult = TRUE)
+

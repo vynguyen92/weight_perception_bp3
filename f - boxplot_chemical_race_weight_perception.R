@@ -90,7 +90,7 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
     theme(legend.position = "top"
           , axis.text.x = element_blank()
           , axis.title.x = element_blank())
-
+  
   df_stats_sample_size <- df_nhanes_same_size %>%
     group_by(race, weight_perception) %>%
     summarise(n = n()) %>%
@@ -116,7 +116,30 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
                                     select(race
                                            , label)
                                   , by = "race")
+  View(df_nhanes_same_size)
+  
+  df_stats_mean_bp3 <- df_nhanes_same_size %>%
+    group_by(race, weight_perception) %>%
+    summarize(mean = exp(mean(log(chem_conc_normalized_creatinine)))
+              , perc_75 = quantile(chem_conc_normalized_creatinine
+                                   , probs = 0.75)) %>%
+    ungroup(.)
+  View(df_stats_mean_bp3)
+    
+  df_stats_diff_mean_bp3 <- df_stats_mean_bp3 %>%
+    group_by(race) %>%
+    summarize(difference = -diff(mean)) %>%
+    ungroup(.) %>%
+    arrange(desc(difference))
+  View(df_stats_diff_mean_bp3)
+  
+  ordered_race <- df_stats_diff_mean_bp3 %>%
+    pull(race)
 
+  df_nhanes_same_size <- df_nhanes_same_size %>%
+    mutate(race = factor(race
+                         , levels = ordered_race))
+  
   boxplot_race_weight_perception_same_size <- ggplot(data = df_nhanes_same_size
                                                      , mapping = aes(x = weight_perception
                                                                      , y = chem_conc_normalized_creatinine
@@ -128,7 +151,7 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
                                  )
                  , inherit.aes = FALSE
                  , width = 0.3) +
-    stat_summary(fun.y = mean
+    stat_summary(fun = "mean"
                  , geom = "point"
                  , shape = 24
                  , size = 4
@@ -183,7 +206,7 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
                            , sep = "")
   }
   # Save the panel of stairway plots as a png and pdf
-  print(plot_name.png)
+  # print(plot_name.png)
   ggsave(filename = plot_name.png
          , plot = boxplot_race_weight_perception_same_size
          , width = 15
@@ -312,7 +335,7 @@ boxplot_chemical_race_weight_perception <- function(df_nhanes
 
   # Set the directory to the folder containing the function and main scripts
   setwd(current_directory)
-  # boxplot_race_weight_perception_same_size
+  boxplot_race_weight_perception_same_size
   # boxplot_race_same_size
-  boxplot_max_size
+  # boxplot_max_size
 }
