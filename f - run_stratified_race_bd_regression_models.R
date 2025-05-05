@@ -1,7 +1,7 @@
-run_stratified_regression_models <- function(df_nhanes 
-                                             , covariates 
-                                             , chemical
-                                             , regression_formulas)
+run_stratified_race_bd_regression_models <- function(df_nhanes 
+                                                     , covariates 
+                                                     , chemical
+                                                     , regression_formulas)
 {
   library(broom)
   library(survey)
@@ -10,8 +10,9 @@ run_stratified_regression_models <- function(df_nhanes
   
   df_nhanes_same_size <- df_nhanes %>%
     select(race
-           , chemical
-           , covariates) %>%
+           , race_weight_perception
+           , all_of(chemical)
+           , all_of(covariates)) %>%
     na.omit(.) %>%
     filter(race != "All NHANES Women") 
   # print(dim(df_nhanes_same_size))
@@ -20,7 +21,6 @@ run_stratified_regression_models <- function(df_nhanes
   
   list_tidy <- list()
   list_glance <- list()
-  list_model_objects <- list()
   
   for(i in seq(num_regression_models))
   {
@@ -32,19 +32,20 @@ run_stratified_regression_models <- function(df_nhanes
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     
     df_tidy_lm <- df_nhanes_same_size %>%
-      group_by(race) %>%
+      group_by(race_weight_perception) %>%
       do(lm(as.formula(regression_model_i)
-                      , data = .) %>%
-               tidy(.)) %>%
+            , data = .) %>%
+           tidy(.)) %>%
       ungroup(.) %>%
       mutate(fold_diff = 10^estimate) %>%
       mutate(percent_diff = (fold_diff-1)*100) %>%
       mutate(regression_formula = regression_model_i) %>%
       mutate(account_sampling_design = "unweighted") %>%
       mutate(type_sample_size = "same across models")
+    # View(df_tidy_lm)
     
     df_glance_lm <- df_nhanes_same_size %>%
-      group_by(race) %>%
+      group_by(race_weight_perception) %>%
       do(lm(as.formula(regression_model_i)
             , data = .) %>%
            glance(.)) %>%
@@ -62,26 +63,13 @@ run_stratified_regression_models <- function(df_nhanes
     
     list_glance[[pattern_same_sample_size_i]] <- df_glance_lm
     
-    
-    list_model_objects[[pattern_same_sample_size_i]] <- df_nhanes_same_size %>%
-      group_split(race) %>%
-      map(~lm(as.formula(regression_model_i)
-               , data = .))
-    
-    group_names <- df_nhanes_same_size %>% 
-      group_keys(race) %>% 
-      pull(race)
-    # print(group_names)
-    
-    names(list_model_objects[[pattern_same_sample_size_i]]) <- group_names
-    # View(list_model_objects[[pattern_same_sample_size_i]])
-    
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Weighted Models  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     
     df_nhanes_same_size_svy <- df_nhanes %>%
       select(race
+             , race_weight_perception
              , chemical
              , covariates
              , "SDMVPSU"
@@ -91,7 +79,7 @@ run_stratified_regression_models <- function(df_nhanes
       filter(race != "All NHANES Women")
     
     df_tidy_svy <- df_nhanes_same_size_svy %>%
-      group_by(race) %>%
+      group_by(race_weight_perception) %>%
       do(svyglm_stratified_model(.
                                  , regression_formula = regression_model_i
                                  , stats = "tidy")) %>%
@@ -101,11 +89,11 @@ run_stratified_regression_models <- function(df_nhanes
       mutate(regression_formula = regression_model_i) %>%
       mutate(account_sampling_design = "weighted") %>%
       mutate(type_sample_size = "same across models")
-    # print(df_tidy_svy)
+    # View(df_tidy_svy)
     
     df_glance_svy <- df_nhanes_same_size_svy %>%
       # filter(race == "Non-Hispanic White") %>%
-      group_by(race) %>%
+      group_by(race_weight_perception) %>%
       do(svyglm_stratified_model(.
                                  , regression_formula = regression_model_i
                                  , stats = "glance")) %>%
@@ -121,20 +109,6 @@ run_stratified_regression_models <- function(df_nhanes
     list_tidy[[pattern_svy_same_sample_size_i]] <- df_tidy_svy
     
     list_glance[[pattern_svy_same_sample_size_i]] <- df_glance_svy
-    
-    list_model_objects[[pattern_svy_same_sample_size_i]] <- df_nhanes_same_size_svy %>%
-      group_split(race) %>%
-      map(~svyglm_stratified_model(.
-                                   , regression_formula = regression_model_i
-                                   , stats = "model_objects"))
-    
-    group_names <- df_nhanes_same_size_svy %>% 
-      group_keys(race) %>% 
-      pull(race)
-    # print(group_names)
-    
-    names(list_model_objects[[pattern_svy_same_sample_size_i]]) <- group_names
-    # View(list_model_objects[[pattern_same_sample_size_i]])
     
   }
   
@@ -153,7 +127,7 @@ run_stratified_regression_models <- function(df_nhanes
                              , ""
                              , regression_formula))
   # View(df_tidy)
-
+  
   df_glance <- reduce(list_glance
                       , full_join
                       , by = NULL) %>%
@@ -161,25 +135,22 @@ run_stratified_regression_models <- function(df_nhanes
                              , ""
                              , regression_formula))
   # View(df_glance)
-
-
+  
+  
   list_regression <- list()
-
+  
   list_regression[["tidy"]] <- df_tidy 
   
   write.xlsx(x = list_regression[["tidy"]]
-             , file = "regressions_race_stratified.xlsx"
+             , file = "regressions_race_bd_stratified.xlsx"
              , sheetName = "tidy")
-
+  
   list_regression[["glance"]] <- df_glance
   
   write.xlsx(x = list_regression[["glance"]]
-             , file = "regressions_race_stratified.xlsx"
+             , file = "regressions_race_bd_stratified.xlsx"
              , sheetName = "glance"
              , append = TRUE)
-
-  list_regression[["model_objects"]] <- list_model_objects
   
   return(list_regression)
-  
 }

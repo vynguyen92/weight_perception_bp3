@@ -29,6 +29,7 @@ run_regression_models <- function(df_nhanes
   
   list_tidy <- list()
   list_glance <- list()
+  list_model_objects <- list()
   
   for(i in seq(num_regression_models))
   {
@@ -65,6 +66,8 @@ run_regression_models <- function(df_nhanes
     list_tidy[[pattern_same_sample_size_i]] <- df_tidy_same_sample_size_i
 
     list_glance[[pattern_same_sample_size_i]] <- df_glance_same_sample_size_i
+    
+    list_model_objects[[pattern_same_sample_size_i]] <- lm_model_same_sample_size
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Weighted Models with Same Sample Size  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -140,6 +143,8 @@ run_regression_models <- function(df_nhanes
     list_tidy[[pattern_svy_same_sample_size_i]] <- df_tidy_svy_same_sample_size_i
 
     list_glance[[pattern_svy_same_sample_size_i]] <- df_glance_svy_same_sample_size_i
+    
+    list_model_objects[[pattern_svy_same_sample_size_i]] <- svy_model_same_sample_size
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Unweighted Models with Max Sample Size  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -323,6 +328,8 @@ run_regression_models <- function(df_nhanes
              , file = "regressions_all_nhanes_women.xlsx"
              , sheetName = "glance"
              , append = TRUE)
+  
+  list_regression[["model_objects"]] <- list_model_objects
 
   return(list_regression)
 }

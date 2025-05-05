@@ -271,7 +271,7 @@ list_perception_vs_all_blacks_youth <- run_perception_vs_all_models(df_nhanes = 
                                                                     , race_group = "Non-Hispanic Black")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Stratified Regression Models  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Race/ethnicity-Stratified Regression Models  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 list_regression_stats_stratified <- run_stratified_regression_models(df_nhanes = df_merge
@@ -283,6 +283,71 @@ list_regression_stats_stratified_youth <- run_stratified_regression_models(df_nh
                                                                      , covariates = vector_covariates_stratified_youth
                                                                      , chemical = chemical_biomarker
                                                                      , regression_formulas = vector_stratified_models_youth)
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~  Regression Models without and with Body Dissatisfaction ~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+vector_regression_bd_models <- c("log10(URXBP3) ~ race + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR"
+                                 , "log10(URXBP3) ~ race + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + weight_perception"
+                                 , "log10(URXBP3) ~ race + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + sunscreen_usage_ordinal"
+                                 , "log10(URXBP3) ~ race + RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + sunscreen_usage_ordinal + weight_perception"
+                                 , "log10(URXBP3) ~ RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR"
+                                 , "log10(URXBP3) ~ RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + race_weight_perception"
+                                 , "log10(URXBP3) ~ RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + sunscreen_usage_ordinal"
+                                 , "log10(URXBP3) ~ RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + sunscreen_usage_ordinal + race_weight_perception"
+                                 )
+
+vector_bd_covariates <- c("race"
+                       , "RIDAGEYR" 
+                       , "URXUCR"  
+                       , "BMXBMI"
+                       , "INDFMPIR"
+                       , "SDDSRVYR"
+                       , "weight_perception"
+                       , "sunscreen_usage_ordinal"
+                       , "race_weight_perception")
+
+list_regression_bd_stats <- run_regression_models(df_nhanes = df_merge
+                                                  , covariates = vector_bd_covariates
+                                                  , chemical = chemical_biomarker
+                                                  , regression_formulas = vector_regression_bd_models)
+
+vector_regression_stratified_bd_models <- c("log10(URXBP3) ~ RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR"
+                                            , "log10(URXBP3) ~ RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + weight_perception"
+                                            , "log10(URXBP3) ~ RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + sunscreen_usage_ordinal"
+                                            , "log10(URXBP3) ~ RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + sunscreen_usage_ordinal + weight_perception")
+
+list_regression_stats_stratified_bd <- run_stratified_regression_models(df_nhanes = df_merge
+                                                                        , covariates = vector_covariates_stratified
+                                                                        , chemical = chemical_biomarker
+                                                                        , regression_formulas = vector_regression_stratified_bd_models)
+
+df_regression_stats_bd <- form_table_with_and_without_weight_perception(list_all = list_regression_bd_stats
+                                                                        , list_stratified = list_regression_stats_stratified_bd)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~ Regression Models Stratified by Combination of Race/ethnicity and Body Dissatisfaction ~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+vector_race_bd_stratified_models <- c("log10(URXBP3) ~ RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR"
+                                      , "log10(URXBP3) ~ RIDAGEYR + SDDSRVYR + URXUCR + BMXBMI + INDFMPIR + sunscreen_usage_ordinal")
+
+vector_covariates_race_bd_stratified <- c("RIDAGEYR" 
+                                          , "URXUCR"  
+                                          , "BMXBMI"
+                                          , "INDFMPIR"
+                                          , "SDDSRVYR"
+                                          , "sunscreen_usage_ordinal")
+
+
+list_regression_stats_race_bd_stratified <- run_stratified_race_bd_regression_models(df_nhanes = df_merge
+                                                                                     , covariates = vector_covariates_race_bd_stratified
+                                                                                     , chemical = chemical_biomarker
+                                                                                     , regression_formulas = vector_race_bd_stratified_models)
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Visualization  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

@@ -54,6 +54,11 @@ svyglm_stratified_model <- function(x
                                                  , df_nhanes = df_race_i
                                                  , svy_design = nhanes_design
                                                  , stats = "adjusted_rsq"))
+    
+  } else if(stats == "model_objects") {
+    
+    df_stats <- svy_model_race_i
+    
   }
   
   return(df_stats)
