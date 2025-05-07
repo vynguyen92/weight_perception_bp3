@@ -101,7 +101,7 @@ form_table_with_and_without_weight_perception <- function(list_all
     
     f_test_i <- anova(list_all$model_objects[[names_model_objects_i[1]]]
                       , list_all$model_objects[[names_model_objects_i[2]]])
-    # print(f_test_i)
+    print(f_test_i)
     # print(str(f_test_i))
     
     p_value_i <- ifelse(account_sampling_design_i == "unweighted"
@@ -134,7 +134,7 @@ form_table_with_and_without_weight_perception <- function(list_all
               , by = c("equation_number"
                        , "account_sampling_design"))
   # print("problem")
-  View(df_stats_all)
+  # View(df_stats_all)
   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
   #~~~~~~~~~~~~~~~~~~~~ Contribution of Body Dissatisfaction on BP3 Levels by Race/ethnicity ~~~~~~~~~~~~~~~~~#
@@ -266,6 +266,10 @@ form_table_with_and_without_weight_perception <- function(list_all
     full_join(.
               , df_stats_race
               , by = colnames(.))
-  View(df_stats_all_groups)
+  # View(df_stats_all_groups)
   
+  write.xlsx(x = df_stats_all_groups
+             , file = "contribution_weight_perception_on_bp3.xlsx")
+  
+  return(df_stats_all_groups)
 }
